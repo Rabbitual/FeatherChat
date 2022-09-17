@@ -1,0 +1,10 @@
+name: FeatherChat
+main: xyz.mauwh.featherchat.FeatherChat
+version: 1.0
+api-version: 1.19
+commands:
+  featherchat:
+    aliases: [ "fc" ]
+    description: Base FeatherChat command
+  test:
+    description: Test command
