@@ -1,0 +1,11 @@
+xyz\mauwh\featherchat\FeatherChatBukkit.class
+xyz\mauwh\featherchat\command\FeatherChatBukkitCommandConditions$FeatherChatParameterCondition.class
+xyz\mauwh\featherchat\command\BukkitChatChannelContextResolver.class
+xyz\mauwh\featherchat\command\BukkitChatChannelCompletionResolver.class
+xyz\mauwh\featherchat\command\FeatherChatBukkitCommandConditions.class
+xyz\mauwh\featherchat\messenger\BukkitChatMessenger.class
+xyz\mauwh\featherchat\listener\PlayerChatListener.class
+xyz\mauwh\featherchat\ComponentPersistentDataType.class
+xyz\mauwh\featherchat\messenger\BukkitPlayer.class
+xyz\mauwh\featherchat\BukkitChatMessengerFactory.class
+xyz\mauwh\featherchat\listener\PlayerJoinQuitListener.class

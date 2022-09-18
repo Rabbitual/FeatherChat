@@ -1,0 +1,10 @@
+xyz\mauwh\featherchat\api\channel\NamespacedChannelKey.class
+xyz\mauwh\featherchat\api\channel\UserChatChannel.class
+xyz\mauwh\featherchat\api\messenger\ChatMessengerFactory.class
+xyz\mauwh\featherchat\api\messenger\Player.class
+xyz\mauwh\featherchat\api\channel\ChannelMessage.class
+xyz\mauwh\featherchat\api\channel\ChatChannel.class
+xyz\mauwh\featherchat\api\messenger\ChatMessengers.class
+xyz\mauwh\featherchat\api\channel\ChatChannels.class
+xyz\mauwh\featherchat\api\FeatherChat.class
+xyz\mauwh\featherchat\api\messenger\ChatMessenger.class
