@@ -7,54 +7,39 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc86d0b8-8a38-4653-89d6-b0ac0fcc37d4" name="Changes" comment="Initial commit">
-      <change afterPath="$PROJECT_DIR$/api/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/FeatherChat.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/channel/ChatChannels.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/messenger/ChatMessengerFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/messenger/ChatMessengers.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bukkit/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/BukkitChatMessengerFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/messenger/ChatMessengerRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/messenger/NonUpdatingPlayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/plugin/FeatherChatAccessible.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/plugin/PluginAccessible.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FeatherChat.iml" beforeDir="false" afterPath="$PROJECT_DIR$/FeatherChat.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/ComponentPersistentDataType.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/ComponentPersistentDataType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/FeatherChat.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/FeatherChatBukkit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/NamespacedChannelKey.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/channel/NamespacedChannelKey.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/channel/AbstractChatChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/channel/AbstractChatChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/channel/ChatChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/channel/ChatChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/channel/ChatChannelRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/channel/ChatChannelRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/channel/UserChatChannel.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/channel/UserChatChannel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/channel/UserChatChannelImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/channel/UserChatChannelImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/command/FeatherChatChannelSubcommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/command/FeatherChatChannelSubcommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/command/FeatherChatDebugSubcommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/command/FeatherChatDebugSubcommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/command/FeatherChatDefaultCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/command/FeatherChatDefaultCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/command/acf/ChatChannelCompletionResolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/command/BukkitChatChannelCompletionResolver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/command/acf/ChatChannelContextResolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/command/BukkitChatChannelContextResolver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/command/acf/FeatherChatBukkitCommandConditions.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/command/FeatherChatBukkitCommandConditions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/exception/DataEntityAccessException.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/exception/DataEntityAccessException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/listener/PlayerChatListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/listener/PlayerChatListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/listener/PlayerJoinQuitListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/listener/PlayerJoinQuitListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/message/ChannelMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/channel/ChannelMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/message/ChannelMessageHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/message/ChannelMessageHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/messenger/ChatMessenger.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/messenger/ChatMessenger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/messenger/ChatMessengerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/messenger/BukkitChatMessenger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/messenger/ChatMessengerPlayerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/xyz/mauwh/featherchat/messenger/BukkitPlayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/messenger/ChatMessengers.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/messenger/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/api/src/main/java/xyz/mauwh/featherchat/api/messenger/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/store/DataAccessObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/store/DataAccessObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/store/yaml/YamlChatChannelDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/store/yaml/YamlChatChannelDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/xyz/mauwh/featherchat/store/yaml/YamlPlayerDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/xyz/mauwh/featherchat/store/yaml/YamlPlayerDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/resources/plugin.yml" afterDir="false" />
+    <list default="true" id="bc86d0b8-8a38-4653-89d6-b0ac0fcc37d4" name="Changes" comment="Convert project to Gradle">
+      <change afterPath="$PROJECT_DIR$/api/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/buildSrc/src/main/kotlin/xyz.mauwh.java-conventions.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bukkit/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -211,7 +196,35 @@
       <option name="project" value="LOCAL" />
       <updated>1663461855923</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Migrated classes into core, platform (bukkit) and api modules">
+      <created>1663538140852</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1663538140852</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Migrated classes into core, platform (bukkit) and api modules">
+      <created>1663538192174</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1663538192174</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Migrated classes into core, platform (bukkit) and api modules">
+      <created>1663541737440</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1663541737440</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Convert project to Gradle">
+      <created>1663547493563</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1663547493563</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -239,6 +252,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
+    <MESSAGE value="Migrated classes into core, platform (bukkit) and api modules" />
+    <MESSAGE value="Convert project to Gradle" />
+    <option name="LAST_COMMIT_MESSAGE" value="Convert project to Gradle" />
   </component>
 </project>
