@@ -1,2 +1,8 @@
 # Project exclude paths
 /target/
+/api/target/
+/bukkit/target/
+/core/target/
+/Api/target/
+/Bukkit/target/
+/FeatherChat/target/
