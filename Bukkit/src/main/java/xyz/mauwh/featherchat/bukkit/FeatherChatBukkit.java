@@ -10,11 +10,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
+import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.bukkit.command.*;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerChatListener;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerJoinQuitListener;
 import xyz.mauwh.featherchat.channel.ChatChannelRepository;
+import xyz.mauwh.featherchat.channel.invite.ChannelInvitationsImpl;
 import xyz.mauwh.featherchat.command.FeatherChatChannelSubcommand;
 import xyz.mauwh.featherchat.command.FeatherChatDebugSubcommand;
 import xyz.mauwh.featherchat.command.FeatherChatDefaultCommand;
@@ -28,10 +30,9 @@ import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
 public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAccessible {
 
     private static FeatherChatBukkit instance;
-
-    private BukkitChatMessengerFactory messengerFactory;
     private ChannelMessageHandler messageHandler;
     private ChatChannels channels;
+    private ChannelInvitations invitations;
     private ChatMessengers<CommandSender, BukkitChatMessenger, BukkitPlayer> messengers;
     private BukkitAudiences adventure;
     private BukkitCommandManager commandManager;
@@ -39,9 +40,12 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAc
     @Override
     public void onEnable() {
         instance = this;
-        this.messengerFactory = new BukkitChatMessengerFactory(this);
         this.channels = new ChatChannelRepository(this);
+        this.invitations = new ChannelInvitationsImpl();
+
+        final BukkitChatMessengerFactory messengerFactory = new BukkitChatMessengerFactory(this);
         this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
+
         this.messageHandler = new ChannelMessageHandler();
 
         this.adventure = BukkitAudiences.create(this);
@@ -73,12 +77,6 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAc
         return instance;
     }
 
-    @Override
-    @NotNull
-    public BukkitChatMessengerFactory getMessengerFactory() {
-        return messengerFactory;
-    }
-
     @NotNull
     public BukkitAudiences getAudienceProvider() {
         validateEnabled();
@@ -94,13 +92,22 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAc
 
     @Override
     @NotNull
+    public ChannelInvitations getInvitations() {
+        validateEnabled();
+        return invitations;
+    }
+
+    @Override
+    @NotNull
     public String getVersion() {
+        validateEnabled();
         return getDescription().getVersion();
     }
 
     @Override
     @NotNull
     public AudienceProvider getAdventure() {
+        validateEnabled();
         return adventure;
     }
 
