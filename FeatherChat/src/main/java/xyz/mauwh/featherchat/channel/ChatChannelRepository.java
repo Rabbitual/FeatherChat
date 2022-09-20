@@ -6,7 +6,6 @@ import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
 import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
@@ -34,7 +33,7 @@ public final class ChatChannelRepository implements ChatChannels {
                 return isMember(plugin.getMessengers().getByUUID(member));
             }
             @Override
-            public boolean isMember(@NotNull ChatMessenger<?> member) {
+            public boolean isMember(@NotNull Player<?> member) {
                 return member.hasPermission("featherchat.debug");
             }
         };
