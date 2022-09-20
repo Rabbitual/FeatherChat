@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
+import xyz.mauwh.featherchat.api.messenger.Player;
 
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +32,11 @@ public interface ChatChannel {
 
     boolean isMember(@NotNull UUID member);
 
-    boolean isMember(@NotNull ChatMessenger<?> member);
+    boolean isMember(@NotNull Player<?> member);
+
+    boolean addMember(@NotNull Player<?> member);
+
+    boolean removeMember(@NotNull Player<?> member);
 
     void sendMessage(@NotNull ChatMessenger<?> sender, @NotNull Component component);
 }

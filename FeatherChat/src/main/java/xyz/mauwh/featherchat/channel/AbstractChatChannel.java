@@ -9,6 +9,7 @@ import xyz.mauwh.featherchat.api.channel.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
+import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
 
 import java.util.Optional;
@@ -105,7 +106,17 @@ public abstract class AbstractChatChannel implements ChannelAccessible, ChatChan
     }
 
     @Override
-    public boolean isMember(@NotNull ChatMessenger<?> member) {
+    public boolean isMember(@NotNull Player<?> member) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    public boolean addMember(@NotNull Player<?> member) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    public boolean removeMember(@NotNull Player<?> member) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -113,9 +124,8 @@ public abstract class AbstractChatChannel implements ChannelAccessible, ChatChan
     public void sendMessage(@NotNull ChatMessenger<?> sender, @NotNull Component component) {
         ChannelMessage message = new ChannelMessage(this, sender, component);
         Component finalMessage = plugin.getMessageHandler().formatMessage(message);
-        // noinspection OptionalGetWithoutIsPresent
-        Audience receiving = plugin.getAdventure().players().filterAudience(
-                audience -> isMember(plugin.getMessengers().getByUUID(audience.get(Identity.UUID).get()))
+        Audience receiving = plugin.getAdventure().players().filterAudience(audience ->
+                isMember(plugin.getMessengers().getByUUID(audience.get(Identity.UUID).orElseThrow()))
         );
         if (consoleLogging) {
             receiving = Audience.audience(receiving, plugin.getAdventure().console());

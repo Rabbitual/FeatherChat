@@ -5,7 +5,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
 
@@ -58,14 +57,16 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
     }
 
     @Override
-    public boolean isMember(@NotNull ChatMessenger<?> member) {
-        return member.isPlayer() && isMember(((Player<?>)member).getUUID());
+    public boolean isMember(@NotNull Player<?> member) {
+        return member.isPlayer() && isMember(member.getUUID());
     }
 
+    @Override
     public boolean addMember(@NotNull Player<?> player) {
         return members.add(player.getUUID());
     }
 
+    @Override
     public boolean removeMember(@NotNull Player<?> player) {
         return members.remove(player.getUUID());
     }
