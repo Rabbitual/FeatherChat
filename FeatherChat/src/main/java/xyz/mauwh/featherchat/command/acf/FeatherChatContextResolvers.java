@@ -1,28 +1,35 @@
-package xyz.mauwh.featherchat.bukkit.command;
+package xyz.mauwh.featherchat.command.acf;
 
-import co.aikar.commands.BukkitCommandExecutionContext;
+import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.Conditions;
-import co.aikar.commands.contexts.ContextResolver;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
+import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
+import xyz.mauwh.featherchat.api.messenger.Player;
 
 import java.util.Collection;
 import java.util.Locale;
 
-public final class BukkitChatChannelContextResolver implements ContextResolver<UserChatChannel, BukkitCommandExecutionContext> {
+public final class FeatherChatContextResolvers {
 
+    private final ChatMessengers<?, ?, ?> messengers;
     private final ChatChannels channelRepository;
 
-    public BukkitChatChannelContextResolver(@NotNull ChatChannels channelRepository) {
+    public FeatherChatContextResolvers(@NotNull ChatMessengers<?, ?, ?> messengers, @NotNull ChatChannels channelRepository) {
+        this.messengers = messengers;
         this.channelRepository = channelRepository;
     }
 
-    @Override
     @NotNull
-    public UserChatChannel getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
+    public Player<?> getPlayer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+        return messengers.getByUUID(context.getIssuer().getUniqueId());
+    }
+
+    @NotNull
+    public UserChatChannel getUserChatChannel(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
         String channelId = context.popFirstArg();
         String[] parts = channelId.split(":");
 

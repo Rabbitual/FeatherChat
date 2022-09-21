@@ -1,6 +1,7 @@
 package xyz.mauwh.featherchat.bukkit;
 
 import co.aikar.commands.BukkitCommandManager;
+import co.aikar.commands.CommandManager;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
@@ -12,7 +13,7 @@ import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
-import xyz.mauwh.featherchat.bukkit.command.*;
+import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerChatListener;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerJoinQuitListener;
 import xyz.mauwh.featherchat.channel.ChatChannelRepository;
@@ -20,6 +21,9 @@ import xyz.mauwh.featherchat.channel.invite.ChannelInvitationsImpl;
 import xyz.mauwh.featherchat.command.FeatherChatChannelSubcommand;
 import xyz.mauwh.featherchat.command.FeatherChatDebugSubcommand;
 import xyz.mauwh.featherchat.command.FeatherChatDefaultCommand;
+import xyz.mauwh.featherchat.command.acf.FeatherChatCommandCompletionHandler;
+import xyz.mauwh.featherchat.command.acf.FeatherChatCommandConditions;
+import xyz.mauwh.featherchat.command.acf.FeatherChatContextResolvers;
 import xyz.mauwh.featherchat.message.ChannelMessageHandler;
 import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessenger;
 import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessengerFactory;
@@ -49,7 +53,8 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAc
         this.messageHandler = new ChannelMessageHandler();
 
         this.adventure = BukkitAudiences.create(this);
-        this.commandManager = createCommandManager();
+        this.commandManager = new BukkitCommandManager(this);
+        setupCommandManager(commandManager);
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerJoinQuitListener(messengers), this);
@@ -131,23 +136,22 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAc
         }
     }
 
-    @NotNull
-    private BukkitCommandManager createCommandManager() {
-        commandManager = new BukkitCommandManager(this);
-        commandManager.getCommandContexts().registerContext(UserChatChannel.class, new BukkitChatChannelContextResolver(channels));
-        commandManager.getCommandCompletions().registerCompletion("channels", new BukkitChatChannelCompletionResolver(this));
+    private void setupCommandManager(@NotNull CommandManager<?, ?, ?, ?, ?, ?> commandManager) {
+        FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(messengers, channels);
+        commandManager.getCommandContexts().registerIssuerOnlyContext(Player.class, contextResolvers::getPlayer);
+        commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);
+        commandManager.getCommandCompletions().registerCompletion("channels", new FeatherChatCommandCompletionHandler(this)::getCompletions);
 
         final var conditions = commandManager.getCommandConditions();
-        conditions.addCondition("playerOnly", FeatherChatBukkitCommandConditions.PLAYER_ONLY);
-        conditions.addCondition(UserChatChannel.class, "isMember", FeatherChatBukkitCommandConditions.IS_MEMBER);
-        conditions.addCondition(UserChatChannel.class, "isOwner", FeatherChatBukkitCommandConditions.IS_OWNER);
-        conditions.addCondition(String.class, "channelName", FeatherChatBukkitCommandConditions.CHANNEL_NAME);
-        conditions.addCondition(String.class, "charLimit", FeatherChatBukkitCommandConditions.CHAR_LIMIT);
+        conditions.addCondition("playerOnly", FeatherChatCommandConditions::playerOnly);
+        conditions.addCondition(UserChatChannel.class, "isMember", FeatherChatCommandConditions::isMember);
+        conditions.addCondition(UserChatChannel.class, "isOwner", FeatherChatCommandConditions::isOwner);
+        conditions.addCondition(String.class, "channelName", FeatherChatCommandConditions::channelName);
+        conditions.addCondition(String.class, "charLimit", FeatherChatCommandConditions::charLimit);
 
         commandManager.registerCommand(new FeatherChatDefaultCommand(this));
         commandManager.registerCommand(new FeatherChatDebugSubcommand(this));
         commandManager.registerCommand(new FeatherChatChannelSubcommand(this));
-        return commandManager;
     }
 
 }

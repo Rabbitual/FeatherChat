@@ -6,7 +6,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import xyz.mauwh.featherchat.api.channel.ChannelMessage;
+import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 

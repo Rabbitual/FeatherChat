@@ -5,7 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
-import xyz.mauwh.featherchat.api.messenger.ChatMessengerFactory;
+import xyz.mauwh.featherchat.messenger.ChatMessengerFactory;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
 import xyz.mauwh.featherchat.messenger.PlayerAccessible;

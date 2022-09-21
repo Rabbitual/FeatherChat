@@ -40,6 +40,13 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
         }
     }
 
+    @Subcommand("invite")
+    @Conditions("playerOnly")
+    @CommandPermission("featherchat.channel.invite")
+    public void onInvite(@NotNull CommandIssuer issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull Player<?> messenger) {
+
+    }
+
     @Subcommand("chat")
     @CommandCompletion("@channels")
     @CommandPermission("featherchat.channel.chat")

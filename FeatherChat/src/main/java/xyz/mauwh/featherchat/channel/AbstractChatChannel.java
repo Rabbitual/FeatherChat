@@ -5,7 +5,7 @@ import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.mauwh.featherchat.api.channel.ChannelMessage;
+import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;

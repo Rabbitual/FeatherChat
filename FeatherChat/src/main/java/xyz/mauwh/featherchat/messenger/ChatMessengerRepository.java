@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
-import xyz.mauwh.featherchat.api.messenger.ChatMessengerFactory;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;

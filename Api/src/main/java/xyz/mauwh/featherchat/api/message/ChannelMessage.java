@@ -1,7 +1,8 @@
-package xyz.mauwh.featherchat.api.channel;
+package xyz.mauwh.featherchat.api.message;
 
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 
 public final class ChannelMessage {

@@ -1,6 +1,8 @@
-package xyz.mauwh.featherchat.api.messenger;
+package xyz.mauwh.featherchat.messenger;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
+import xyz.mauwh.featherchat.api.messenger.Player;
 
 import java.util.UUID;
 
