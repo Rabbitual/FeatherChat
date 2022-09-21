@@ -6,7 +6,7 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,10 +15,10 @@ import java.util.Set;
 
 public final class FeatherChatCommandCompletionHandler {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
     private final ChatChannels channels;
 
-    public FeatherChatCommandCompletionHandler(@NotNull FeatherChatAccessible plugin) {
+    public FeatherChatCommandCompletionHandler(@NotNull FeatherChatPlugin plugin) {
         Objects.requireNonNull(plugin, "null plugin");
         this.plugin = plugin;
         this.channels = plugin.getChannels();

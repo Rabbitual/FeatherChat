@@ -12,17 +12,17 @@ import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 @CommandAlias("featherchat|fc")
 @Subcommand("channel|ch")
 @CommandPermission("featherchat.channel")
 public final class FeatherChatChannelSubcommand extends BaseCommand {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
     private final ChatChannels channelRepository;
 
-    public FeatherChatChannelSubcommand(@NotNull FeatherChatAccessible plugin) {
+    public FeatherChatChannelSubcommand(@NotNull FeatherChatPlugin plugin) {
         this.plugin = plugin;
         this.channelRepository = plugin.getChannels();
     }

@@ -6,14 +6,14 @@ import co.aikar.commands.annotation.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 @CommandAlias("featherchat|fc")
 public final class FeatherChatDefaultCommand extends BaseCommand {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
 
-    public FeatherChatDefaultCommand(@NotNull FeatherChatAccessible plugin) {
+    public FeatherChatDefaultCommand(@NotNull FeatherChatPlugin plugin) {
         this.plugin = plugin;
     }
 

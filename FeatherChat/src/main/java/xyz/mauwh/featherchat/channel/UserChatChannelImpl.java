@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,11 +17,11 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
     private UUID owner;
     private final Set<UUID> members;
 
-    public UserChatChannelImpl(@NotNull FeatherChatAccessible plugin, @NotNull UUID uuid, @NotNull NamespacedChannelKey key, @NotNull UUID owner, @NotNull String name) {
+    public UserChatChannelImpl(@NotNull FeatherChatPlugin plugin, @NotNull UUID uuid, @NotNull NamespacedChannelKey key, @NotNull UUID owner, @NotNull String name) {
         this(plugin, uuid, key, owner, name, new HashSet<>());
     }
 
-    public UserChatChannelImpl(@NotNull FeatherChatAccessible plugin, @NotNull UUID uuid, @NotNull NamespacedChannelKey key, @NotNull UUID owner, @NotNull String name, @NotNull Set<UUID> members) {
+    public UserChatChannelImpl(@NotNull FeatherChatPlugin plugin, @NotNull UUID uuid, @NotNull NamespacedChannelKey key, @NotNull UUID owner, @NotNull String name, @NotNull Set<UUID> members) {
         super(plugin, key, uuid, name);
         this.setOwner(owner);
         this.members = members;

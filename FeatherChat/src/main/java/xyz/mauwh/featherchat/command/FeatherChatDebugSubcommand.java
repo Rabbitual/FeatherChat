@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -25,10 +25,10 @@ import java.util.Locale;
 @CommandPermission("featherchat.debug")
 public final class FeatherChatDebugSubcommand extends BaseCommand {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
     private final ChatChannel debugChannel;
 
-    public FeatherChatDebugSubcommand(@NotNull FeatherChatAccessible plugin) {
+    public FeatherChatDebugSubcommand(@NotNull FeatherChatPlugin plugin) {
         this.plugin = plugin;
         this.debugChannel = plugin.getChannels().getDebugChannel();
     }

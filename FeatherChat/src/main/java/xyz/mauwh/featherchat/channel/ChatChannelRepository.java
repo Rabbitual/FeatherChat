@@ -8,7 +8,7 @@ import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 import xyz.mauwh.featherchat.store.yaml.YamlChatChannelDAO;
 
 import java.util.HashMap;
@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 public final class ChatChannelRepository implements ChatChannels {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
     private final ChatChannel debugChannel;
     private final Map<UUID, UserChatChannel> uuid2channel;
     private final Map<NamespacedChannelKey, UserChatChannel> key2channel;
     private final YamlChatChannelDAO chatChannelDAO;
 
-    public ChatChannelRepository(@NotNull FeatherChatAccessible plugin) {
+    public ChatChannelRepository(@NotNull FeatherChatPlugin plugin) {
         this.plugin = plugin;
         this.debugChannel = new AbstractChatChannel(plugin, "debug") {
             @Override

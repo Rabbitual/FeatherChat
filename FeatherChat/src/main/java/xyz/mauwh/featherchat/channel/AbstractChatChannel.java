@@ -10,17 +10,17 @@ import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class AbstractChatChannel implements ChannelAccessible, ChatChannel {
+public abstract class AbstractChatChannel implements ChatChannel {
 
     private static final String DEFAULT_FORMAT = "<dark_gray>[<timestamp>]</dark_gray> <gray>[<channel_name>]</gray> <sender_name>: <message>";
 
-    protected final FeatherChatAccessible plugin;
+    protected final FeatherChatPlugin plugin;
     private final NamespacedChannelKey key;
     private final UUID uuid;
     private final String name;
@@ -28,15 +28,15 @@ public abstract class AbstractChatChannel implements ChannelAccessible, ChatChan
     private String format;
     private boolean consoleLogging;
 
-    public AbstractChatChannel(@NotNull FeatherChatAccessible plugin, @NotNull String name) {
+    public AbstractChatChannel(@NotNull FeatherChatPlugin plugin, @NotNull String name) {
         this(plugin, UUID.randomUUID(), name);
     }
 
-    public AbstractChatChannel(@NotNull FeatherChatAccessible plugin, @NotNull UUID uuid, @NotNull String name) {
+    public AbstractChatChannel(@NotNull FeatherChatPlugin plugin, @NotNull UUID uuid, @NotNull String name) {
         this(plugin, NamespacedChannelKey.featherchat(name), uuid, name);
     }
 
-    protected AbstractChatChannel(@NotNull FeatherChatAccessible plugin, @NotNull NamespacedChannelKey key, @NotNull UUID uuid, @NotNull String name) {
+    protected AbstractChatChannel(@NotNull FeatherChatPlugin plugin, @NotNull NamespacedChannelKey key, @NotNull UUID uuid, @NotNull String name) {
         this.plugin = plugin;
         this.key = key;
         this.uuid = uuid;
@@ -95,7 +95,6 @@ public abstract class AbstractChatChannel implements ChannelAccessible, ChatChan
         throw new UnsupportedOperationException("not yet implemented");
     }
 
-    @Override
     public void setMembers(@NotNull Set<UUID> members) {
         throw new UnsupportedOperationException("not yet implemented");
     }

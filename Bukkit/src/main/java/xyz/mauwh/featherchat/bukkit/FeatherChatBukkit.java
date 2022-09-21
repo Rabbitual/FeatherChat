@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import xyz.mauwh.featherchat.api.FeatherChat;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
@@ -28,9 +29,9 @@ import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessenger;
 import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessengerFactory;
 import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayer;
 import xyz.mauwh.featherchat.messenger.ChatMessengerRepository;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
-public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAccessible {
+public final class FeatherChatBukkit extends JavaPlugin implements FeatherChat, FeatherChatPlugin {
 
     private static FeatherChatBukkit instance;
     private ChannelMessageHandler messageHandler;

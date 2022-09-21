@@ -5,7 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.FeatherChat;
 import xyz.mauwh.featherchat.message.ChannelMessageHandler;
 
-public interface FeatherChatAccessible extends FeatherChat, PluginAccessible {
+import java.io.File;
+import java.util.logging.Logger;
+
+public interface FeatherChatPlugin extends FeatherChat {
     @NotNull AudienceProvider getAdventure();
     @NotNull ChannelMessageHandler getMessageHandler();
+    @NotNull File getDataFolder();
+    @NotNull Logger getLogger();
 }
