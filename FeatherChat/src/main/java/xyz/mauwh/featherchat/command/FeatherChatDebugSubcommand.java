@@ -55,7 +55,7 @@ public final class FeatherChatDebugSubcommand extends BaseCommand {
     public void onDateTest(@NotNull CommandIssuer issuer) {
         LocalDateTime ldt = LocalDateTime.now();
         OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.systemDefault().getRules().getOffset(ldt));
-        Player<?> player = plugin.getMessengers().getByUUID(issuer.getUniqueId());
+        Player player = plugin.getMessengers().getByUUID(issuer.getUniqueId());
         player.sendMessage(Component.text("1: " + formatter1.format(odt), NamedTextColor.GREEN));
         player.sendMessage(Component.text("2: " + formatter2.format(odt), NamedTextColor.GREEN));
     }

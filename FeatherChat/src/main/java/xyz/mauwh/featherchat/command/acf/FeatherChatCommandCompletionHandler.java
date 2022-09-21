@@ -26,7 +26,7 @@ public final class FeatherChatCommandCompletionHandler {
 
     @NotNull
     public Collection<String> getCompletions(CommandCompletionContext<?> context) throws InvalidCommandArgument {
-        Player<?> player = plugin.getMessengers().getByUUID(context.getIssuer().getUniqueId());
+        Player player = plugin.getMessengers().getByUUID(context.getIssuer().getUniqueId());
         Set<? extends UserChatChannel> channels = this.channels.filterByParticipant(player);
         Set<String> matches = new HashSet<>();
         channels.forEach(channel -> {

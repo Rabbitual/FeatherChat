@@ -8,10 +8,10 @@ import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 public final class ChannelMessage {
 
     private final ChatChannel channel;
-    private final ChatMessenger<?> sender;
+    private final ChatMessenger sender;
     private final Component message;
 
-    public ChannelMessage(@NotNull ChatChannel channel, @NotNull ChatMessenger<?> sender, @NotNull Component message) {
+    public ChannelMessage(@NotNull ChatChannel channel, @NotNull ChatMessenger sender, @NotNull Component message) {
         this.channel = channel;
         this.sender = sender;
         this.message = message;
@@ -31,7 +31,7 @@ public final class ChannelMessage {
      * @return the sender of this message
      */
     @NotNull
-    public ChatMessenger<?> getSender() {
+    public ChatMessenger getSender() {
         return sender;
     }
 

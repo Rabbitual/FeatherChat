@@ -15,7 +15,7 @@ public final class NamespacedChannelKey {
     private final String namespace;
     private final String key;
 
-    public NamespacedChannelKey(@NotNull ChatMessenger<?> owner, @NotNull String channelName) {
+    public NamespacedChannelKey(@NotNull ChatMessenger owner, @NotNull String channelName) {
         this(owner.getName(), channelName);
     }
 

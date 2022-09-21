@@ -106,22 +106,22 @@ public abstract class AbstractChatChannel implements ChannelAccessible, ChatChan
     }
 
     @Override
-    public boolean isMember(@NotNull Player<?> member) {
+    public boolean isMember(@NotNull Player member) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
-    public boolean addMember(@NotNull Player<?> member) {
+    public boolean addMember(@NotNull Player member) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
-    public boolean removeMember(@NotNull Player<?> member) {
+    public boolean removeMember(@NotNull Player member) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
-    public void sendMessage(@NotNull ChatMessenger<?> sender, @NotNull Component component) {
+    public void sendMessage(@NotNull ChatMessenger sender, @NotNull Component component) {
         ChannelMessage message = new ChannelMessage(this, sender, component);
         Component finalMessage = plugin.getMessageHandler().formatMessage(message);
         Audience receiving = plugin.getAdventure().players().filterAudience(audience ->

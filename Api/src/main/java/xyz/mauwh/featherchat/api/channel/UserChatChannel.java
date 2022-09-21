@@ -9,5 +9,5 @@ public interface UserChatChannel extends ChatChannel {
     @NotNull UUID getOwner();
     void setOwner(@NotNull UUID owner);
 
-    boolean removeMember(@NotNull Player<?> player);
+    boolean removeMember(@NotNull Player player);
 }

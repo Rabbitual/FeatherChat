@@ -6,7 +6,7 @@ import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import java.util.Set;
 import java.util.UUID;
 
-public interface Player<T> extends ChatMessenger<T> {
+public interface Player extends ChatMessenger {
     @NotNull UUID getUUID();
     @NotNull String getName();
     @NotNull Set<UUID> getChannels();

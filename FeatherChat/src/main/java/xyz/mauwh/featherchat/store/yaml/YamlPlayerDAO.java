@@ -15,7 +15,7 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
-public final class YamlPlayerDAO<T, U extends ChatMessenger<T>, V extends Player<T>> implements DataAccessObject<V, UUID> {
+public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> implements DataAccessObject<V, UUID> {
 
     private static final Logger logger = Logger.getLogger("FeatherChatData");
     private final ChatMessengerFactory<T, U, V> messengerFactory;
@@ -98,7 +98,7 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger<T>, V extends Player
 
         if (values.containsKey("displayName")) {
             Component displayName = miniMessage.deserialize(values.get("displayName").toString());
-            ((PlayerAccessible<?>)player).setDisplayName(displayName, false);
+            ((PlayerAccessible)player).setDisplayName(displayName, false);
         }
 
         Set<UUID> channelUUIDs = new HashSet<>();
@@ -111,7 +111,7 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger<T>, V extends Player
             }
         });
 
-        ((PlayerAccessible<?>)player).setChannels(channelUUIDs);
+        ((PlayerAccessible)player).setChannels(channelUUIDs);
         return player;
     }
 

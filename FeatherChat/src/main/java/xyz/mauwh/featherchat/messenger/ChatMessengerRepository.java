@@ -12,7 +12,7 @@ import xyz.mauwh.featherchat.store.yaml.YamlPlayerDAO;
 import java.io.File;
 import java.util.*;
 
-public final class ChatMessengerRepository<T, U extends ChatMessenger<T>, V extends Player<T>> implements ChatMessengers<T, U, V> {
+public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends Player> implements ChatMessengers<T, U, V> {
 
     private final ChatMessengerFactory<T, U, V> messengerFactory;
     private final Map<T, U> sender2messenger;
@@ -69,6 +69,7 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger<T>, V exte
     @Override
     public void updateAndRemove(@NotNull V player) {
         uuid2player.remove(player.getUUID());
+        //noinspection SuspiciousMethodCalls
         sender2messenger.remove(player.getHandle(), player);
         playerDao.update(player);
     }

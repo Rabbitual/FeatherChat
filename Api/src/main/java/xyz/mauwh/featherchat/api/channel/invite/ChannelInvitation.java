@@ -7,10 +7,10 @@ import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 public final class ChannelInvitation {
 
     private final UserChatChannel channel;
-    private final ChatMessenger<?> inviter;
-    private final ChatMessenger<?> invitee;
+    private final ChatMessenger inviter;
+    private final ChatMessenger invitee;
 
-    public ChannelInvitation(@NotNull UserChatChannel channel, @NotNull ChatMessenger<?> inviter, @NotNull ChatMessenger<?> invitee) {
+    public ChannelInvitation(@NotNull UserChatChannel channel, @NotNull ChatMessenger inviter, @NotNull ChatMessenger invitee) {
         this.channel = channel;
         this.inviter = inviter;
         this.invitee = invitee;
@@ -22,12 +22,12 @@ public final class ChannelInvitation {
     }
 
     @NotNull
-    public ChatMessenger<?> getInviter() {
+    public ChatMessenger getInviter() {
         return inviter;
     }
 
     @NotNull
-    public ChatMessenger<?> getInvitee() {
+    public ChatMessenger getInvitee() {
         return invitee;
     }
 

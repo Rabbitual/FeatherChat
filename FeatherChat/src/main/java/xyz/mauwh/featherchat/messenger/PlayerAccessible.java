@@ -7,7 +7,7 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import java.util.Set;
 import java.util.UUID;
 
-public interface PlayerAccessible<T> extends Player<T> {
+public interface PlayerAccessible extends Player {
     void setDisplayName(@NotNull Component displayName, boolean update);
     void setChannels(@NotNull Set<UUID> channels);
 }

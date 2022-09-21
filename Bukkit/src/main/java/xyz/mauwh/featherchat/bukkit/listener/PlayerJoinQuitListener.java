@@ -21,7 +21,7 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        ((PlayerAccessible<?>)messengers.getBySender(event.getPlayer())).validateChannels();
+        ((PlayerAccessible)messengers.getBySender(event.getPlayer())).validateChannels();
     }
 
     @EventHandler

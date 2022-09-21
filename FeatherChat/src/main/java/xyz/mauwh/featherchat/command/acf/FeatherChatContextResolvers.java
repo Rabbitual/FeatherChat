@@ -24,7 +24,7 @@ public final class FeatherChatContextResolvers {
     }
 
     @NotNull
-    public Player<?> getPlayer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+    public Player getPlayer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
         return messengers.getByUUID(context.getIssuer().getUniqueId());
     }
 

@@ -31,7 +31,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @Conditions("playerOnly")
     @CommandPermission("featherchat.channel.create")
     public void onCreate(@NotNull CommandIssuer issuer, @NotNull String channelName) {
-        Player<?> player = plugin.getMessengers().getByUUID(issuer.getUniqueId());
+        Player player = plugin.getMessengers().getByUUID(issuer.getUniqueId());
         try {
             ChatChannel channel = channelRepository.createChannel(player, channelName);
             player.sendMessage(Component.text("Successfully created channel '" + channelName + " (" + channel.getKey() + ")'", NamedTextColor.GREEN));
@@ -43,7 +43,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @Subcommand("invite")
     @Conditions("playerOnly")
     @CommandPermission("featherchat.channel.invite")
-    public void onInvite(@NotNull CommandIssuer issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull Player<?> messenger) {
+    public void onInvite(@NotNull CommandIssuer issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull Player messenger) {
 
     }
 
@@ -51,7 +51,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @CommandCompletion("@channels")
     @CommandPermission("featherchat.channel.chat")
     public void onChat(@NotNull CommandIssuer issuer, @NotNull @Conditions("isMember") UserChatChannel channel, @NotNull @Single String message) {
-        ChatMessenger<?> messenger = plugin.getMessengers().getByUUID(issuer.getUniqueId());
+        ChatMessenger messenger = plugin.getMessengers().getByUUID(issuer.getUniqueId());
         channel.sendMessage(messenger, Component.text(message));
     }
 

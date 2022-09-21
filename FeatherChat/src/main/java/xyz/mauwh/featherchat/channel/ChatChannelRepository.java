@@ -33,7 +33,7 @@ public final class ChatChannelRepository implements ChatChannels {
                 return isMember(plugin.getMessengers().getByUUID(member));
             }
             @Override
-            public boolean isMember(@NotNull Player<?> member) {
+            public boolean isMember(@NotNull Player member) {
                 return member.hasPermission("featherchat.debug");
             }
         };
@@ -58,7 +58,7 @@ public final class ChatChannelRepository implements ChatChannels {
      * @return the newly created chat channel
      */
     @NotNull
-    public ChatChannel createChannel(@NotNull Player<?> owner, @NotNull String name) {
+    public ChatChannel createChannel(@NotNull Player owner, @NotNull String name) {
         NamespacedChannelKey key = new NamespacedChannelKey(owner, name);
         if (key2channel.get(key) != null) {
             throw new IllegalArgumentException("Channel with key '" + key + "' already exists");
@@ -139,7 +139,7 @@ public final class ChatChannelRepository implements ChatChannels {
     }
 
     @NotNull
-    public Set<UserChatChannel> filterByOwner(@NotNull Player<?> owner) {
+    public Set<UserChatChannel> filterByOwner(@NotNull Player owner) {
         return key2channel.values().stream().filter(channel -> channel.getOwner().equals(owner.getUUID())).collect(Collectors.toSet());
     }
 
@@ -149,7 +149,7 @@ public final class ChatChannelRepository implements ChatChannels {
     }
 
     @NotNull
-    public Set<UserChatChannel> filterByParticipant(@NotNull Player<?> participant) {
+    public Set<UserChatChannel> filterByParticipant(@NotNull Player participant) {
         return participant.getChannels().stream().map(this::resolveByUUID).collect(Collectors.toSet());
     }
 

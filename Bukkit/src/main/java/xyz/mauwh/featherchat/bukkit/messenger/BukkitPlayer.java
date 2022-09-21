@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandSender;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +16,7 @@ import xyz.mauwh.featherchat.messenger.PlayerAccessible;
 
 import java.util.*;
 
-public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAccessible<CommandSender>, Player<CommandSender> {
+public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAccessible, Player {
 
     private final UUID uuid;
     private final Set<UUID> channels;
@@ -68,6 +67,7 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
 
     @Override
     @Nullable
+    @SuppressWarnings("unchecked")
     public org.bukkit.entity.Player getHandle() {
         return Bukkit.getPlayer(uuid);
     }

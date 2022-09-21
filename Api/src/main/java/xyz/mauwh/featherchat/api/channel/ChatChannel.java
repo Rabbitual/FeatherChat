@@ -32,11 +32,11 @@ public interface ChatChannel {
 
     boolean isMember(@NotNull UUID member);
 
-    boolean isMember(@NotNull Player<?> member);
+    boolean isMember(@NotNull Player member);
 
-    boolean addMember(@NotNull Player<?> member);
+    boolean addMember(@NotNull Player member);
 
-    boolean removeMember(@NotNull Player<?> member);
+    boolean removeMember(@NotNull Player member);
 
-    void sendMessage(@NotNull ChatMessenger<?> sender, @NotNull Component component);
+    void sendMessage(@NotNull ChatMessenger sender, @NotNull Component component);
 }

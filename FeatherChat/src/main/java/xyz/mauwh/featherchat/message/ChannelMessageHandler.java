@@ -34,7 +34,7 @@ public class ChannelMessageHandler {
     @NotNull
     private TagResolver[] createMessageTags(@NotNull ChannelMessage message) {
         ChatChannel channel = message.getChannel();
-        ChatMessenger<?> sender = message.getSender();
+        ChatMessenger sender = message.getSender();
         return new TagResolver[] {
             Placeholder.component("timestamp", Component.text(formatter.format(LocalDateTime.now()))),
             Placeholder.component("channel_name", channel.getFriendlyName()),

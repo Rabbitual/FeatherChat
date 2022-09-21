@@ -13,7 +13,7 @@ import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import java.util.Objects;
 import java.util.Optional;
 
-public class BukkitChatMessenger implements ChatMessenger<CommandSender> {
+public class BukkitChatMessenger implements ChatMessenger {
 
     protected final FeatherChatBukkit plugin;
     private final CommandSender handle;
@@ -52,6 +52,7 @@ public class BukkitChatMessenger implements ChatMessenger<CommandSender> {
 
     @Override
     @Nullable
+    @SuppressWarnings("unchecked")
     public CommandSender getHandle() {
         return handle;
     }
@@ -67,7 +68,7 @@ public class BukkitChatMessenger implements ChatMessenger<CommandSender> {
     }
 
     @Override
-    public void sendMessage(@Nullable ChatMessenger<?> sender, @NotNull Component message) {
+    public void sendMessage(@Nullable ChatMessenger sender, @NotNull Component message) {
         if (this.handle == null) {
             return;
         }

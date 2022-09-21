@@ -21,7 +21,8 @@ public final class FeatherChatCommandConditions {
         }
     }
 
-    public static <T extends CommandExecutionContext<T, U>, U extends CommandIssuer> void isMember(@NotNull ConditionContext<U> context, T cmdContext, @NotNull UserChatChannel channel) throws InvalidCommandArgument {
+    public static <T extends CommandExecutionContext<T, V>, V extends CommandIssuer>
+    void isMember(@NotNull ConditionContext<V> context, @NotNull T cmdContext, @NotNull UserChatChannel channel) throws InvalidCommandArgument {
         if (!channel.isMember(cmdContext.getIssuer().getUniqueId())) {
             throw new ConditionFailedException("Unable to find channel '" + channel.getName() + "'");
         }

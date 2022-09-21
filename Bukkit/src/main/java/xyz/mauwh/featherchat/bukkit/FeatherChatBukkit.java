@@ -1,7 +1,6 @@
 package xyz.mauwh.featherchat.bukkit;
 
-import co.aikar.commands.BukkitCommandManager;
-import co.aikar.commands.CommandManager;
+import co.aikar.commands.*;
 import net.kyori.adventure.platform.AudienceProvider;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
@@ -136,7 +135,9 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatAc
         }
     }
 
-    private void setupCommandManager(@NotNull CommandManager<?, ?, ?, ?, ?, ?> commandManager) {
+    private <T, U extends CommandIssuer,
+            V extends CommandExecutionContext<V, U>,
+            W extends ConditionContext<U>> void setupCommandManager(@NotNull CommandManager<T, U, ?, ?, V, W> commandManager) {
         FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(messengers, channels);
         commandManager.getCommandContexts().registerIssuerOnlyContext(Player.class, contextResolvers::getPlayer);
         commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);

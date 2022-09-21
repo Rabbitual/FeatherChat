@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public interface ChatMessengers<T, U extends ChatMessenger<T>, V extends Player<T>> {
+public interface ChatMessengers<T, U extends ChatMessenger, V extends Player> {
     @NotNull U getConsole();
     @NotNull U getBySender(@NotNull T sender);
     @NotNull V getByUUID(@NotNull UUID uuid);

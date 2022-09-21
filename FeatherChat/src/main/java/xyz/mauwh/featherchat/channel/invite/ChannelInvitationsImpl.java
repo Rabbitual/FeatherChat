@@ -10,7 +10,7 @@ import java.util.*;
 
 public class ChannelInvitationsImpl implements ChannelInvitations {
 
-    private final Map<Player<?>, Set<ChannelInvitation>> invites;
+    private final Map<Player, Set<ChannelInvitation>> invites;
 
     public ChannelInvitationsImpl() {
         this.invites = new HashMap<>();
@@ -18,7 +18,7 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
 
     @Override
     @NotNull
-    public ChannelInvitation invite(@NotNull UserChatChannel channel, @NotNull Player<?> inviter, @NotNull Player<?> invitee) {
+    public ChannelInvitation invite(@NotNull UserChatChannel channel, @NotNull Player inviter, @NotNull Player invitee) {
         Set<ChannelInvitation> playerInvites = invites.computeIfAbsent(invitee, invitee1 -> new HashSet<>());
         ChannelInvitation invite = new ChannelInvitation(channel, inviter, invitee);
         playerInvites.add(invite);
@@ -26,7 +26,7 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
     }
 
     @Override
-    public boolean isInvited(@NotNull Player<?> invitee, @NotNull UserChatChannel channel) {
+    public boolean isInvited(@NotNull Player invitee, @NotNull UserChatChannel channel) {
         Set<ChannelInvitation> playerInvites = invites.get(invitee);
         if (playerInvites == null) {
             return false;
@@ -40,7 +40,7 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
     }
 
     @Override
-    public boolean acceptInvitation(@NotNull Player<?> invitee, @NotNull UserChatChannel channel) {
+    public boolean acceptInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel) {
         Set<ChannelInvitation> playerInvites = invites.get(invitee);
         if (playerInvites == null) {
             return false;
@@ -58,7 +58,7 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
     }
 
     @Override
-    public boolean denyInvitation(@NotNull Player<?> invitee, @NotNull UserChatChannel channel) {
+    public boolean denyInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel) {
         Set<ChannelInvitation> playerInvites = invites.get(invitee);
         if (playerInvites == null) {
             return false;
