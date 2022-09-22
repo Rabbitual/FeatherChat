@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import xyz.mauwh.featherchat.api.FeatherChat;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
@@ -31,7 +30,9 @@ import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayer;
 import xyz.mauwh.featherchat.messenger.ChatMessengerRepository;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
-public final class FeatherChatBukkit extends JavaPlugin implements FeatherChat, FeatherChatPlugin {
+import java.util.Objects;
+
+public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPlugin {
 
     private static FeatherChatBukkit instance;
     private ChannelMessageHandler messageHandler;
@@ -43,18 +44,21 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChat, 
 
     @Override
     public void onEnable() {
+        this.enable();
+    }
+
+    @Override
+    public void enable() {
         instance = this;
-        this.channels = new ChatChannelRepository(this);
-        this.invitations = new ChannelInvitationsImpl();
-
         final BukkitChatMessengerFactory messengerFactory = new BukkitChatMessengerFactory(this);
-        this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
-
-        this.messageHandler = new ChannelMessageHandler();
-
         this.adventure = BukkitAudiences.create(this);
         this.commandManager = new BukkitCommandManager(this);
         setupCommandManager(commandManager);
+
+        this.channels = new ChatChannelRepository(this);
+        this.invitations = new ChannelInvitationsImpl();
+        this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
+        this.messageHandler = new ChannelMessageHandler();
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerJoinQuitListener(messengers), this);
@@ -65,6 +69,11 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChat, 
 
     @Override
     public void onDisable() {
+        this.disable();
+    }
+
+    @Override
+    public void disable() {
         if (this.adventure != null) {
             this.adventure.close();
             this.adventure = null;
@@ -73,72 +82,65 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChat, 
         this.commandManager = null;
         this.messageHandler = null;
         this.channels = null;
+        this.invitations = null;
+        this.messengers = null;
         instance = null;
     }
 
     @NotNull
     public static FeatherChatBukkit get() throws IllegalStateException {
-        instance.validateEnabled();
+        Objects.requireNonNull(instance, "null instance");
+        if (!instance.isEnabled()) {
+            throw new IllegalStateException("Unable to access plugin before it has been enabled");
+        }
         return instance;
     }
 
     @NotNull
     public BukkitAudiences getAudienceProvider() {
-        validateEnabled();
         return adventure;
     }
 
     @Override
     @NotNull
     public ChatChannels getChannels() {
-        validateEnabled();
         return channels;
     }
 
     @Override
     @NotNull
     public ChannelInvitations getInvitations() {
-        validateEnabled();
         return invitations;
     }
 
     @Override
     @NotNull
     public String getVersion() {
-        validateEnabled();
         return getDescription().getVersion();
     }
 
     @Override
     @NotNull
     public AudienceProvider getAdventure() {
-        validateEnabled();
         return adventure;
     }
 
     @Override
     @NotNull
     public ChannelMessageHandler getMessageHandler() {
-        validateEnabled();
         return messageHandler;
     }
 
     @Override
     @NotNull
     public ChatMessengers<CommandSender, BukkitChatMessenger, BukkitPlayer> getMessengers() {
-        validateEnabled();
         return messengers;
     }
 
-    private void validateEnabled() throws IllegalStateException {
-        if (!instance.isEnabled()) {
-            throw new IllegalStateException("Unable to access plugin before it has been enabled");
-        }
-    }
-
-    private <T, U extends CommandIssuer,
-            V extends CommandExecutionContext<V, U>,
-            W extends ConditionContext<U>> void setupCommandManager(@NotNull CommandManager<T, U, ?, ?, V, W> commandManager) {
+    @Override
+    public <IT, I extends CommandIssuer,
+            CEC extends CommandExecutionContext<CEC, I>,
+            CC extends ConditionContext<I>> void setupCommandManager(@NotNull CommandManager<IT, I, ?, ?, CEC, CC> commandManager) {
         FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(messengers, channels);
         commandManager.getCommandContexts().registerIssuerOnlyContext(Player.class, contextResolvers::getPlayer);
         commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);

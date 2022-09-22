@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
@@ -30,41 +29,42 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @Subcommand("create")
     @Conditions("playerOnly")
     @CommandPermission("featherchat.channel.create")
-    public void onCreate(@NotNull CommandIssuer issuer, @NotNull String channelName) {
-        Player player = plugin.getMessengers().getByUUID(issuer.getUniqueId());
+    public void onCreate(@NotNull Player issuer, @NotNull String channelName) {
         try {
-            ChatChannel channel = channelRepository.createChannel(player, channelName);
-            player.sendMessage(Component.text("Successfully created channel '" + channelName + " (" + channel.getKey() + ")'", NamedTextColor.GREEN));
+            ChatChannel channel = channelRepository.createChannel(issuer, channelName);
+            issuer.sendMessage(Component.text("Successfully created channel '" + channelName + " (" + channel.getKey() + ")'", NamedTextColor.GREEN));
         } catch (IllegalArgumentException err) {
-            player.sendMessage(Component.text(err.getMessage(), NamedTextColor.RED));
+            issuer.sendMessage(Component.text(err.getMessage(), NamedTextColor.RED));
         }
     }
 
     @Subcommand("invite")
     @Conditions("playerOnly")
     @CommandPermission("featherchat.channel.invite")
-    public void onInvite(@NotNull CommandIssuer issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull Player messenger) {
-
+    public void onInvite(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull Player invitee) {
+        plugin.getInvitations().invite(channel, issuer, invitee);
+        Component channelName = channel.getFriendlyName();
+        Component inviteeName = invitee.getFriendlyName();
+        Component message = inviteeName.append(Component.text(" has been invited to ", NamedTextColor.GREEN)).append(channelName);
+        issuer.sendMessage(message);
     }
 
     @Subcommand("chat")
     @CommandCompletion("@channels")
     @CommandPermission("featherchat.channel.chat")
-    public void onChat(@NotNull CommandIssuer issuer, @NotNull @Conditions("isMember") UserChatChannel channel, @NotNull @Single String message) {
-        ChatMessenger messenger = plugin.getMessengers().getByUUID(issuer.getUniqueId());
-        channel.sendMessage(messenger, Component.text(message));
+    public void onChat(@NotNull Player issuer, @NotNull @Conditions("isMember") UserChatChannel channel, @NotNull @Single String message) {
+        channel.sendMessage(issuer, Component.text(message));
     }
 
     @Subcommand("displayname")
     @Conditions("playerOnly")
     @CommandAlias("nickname|nick")
     @CommandPermission("featherchat.channel.displayname")
-    public void onDisplayName(@NotNull CommandIssuer issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull @Single @Conditions("channelName|charLimit:max=56") String displayName) {
+    public void onDisplayName(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull @Single @Conditions("channelName|charLimit:max=56") String displayName) {
         Component serialized = LegacyComponentSerializer.legacyAmpersand().deserialize(displayName);
         channel.setDisplayName(serialized);
-        plugin.getMessengers().getByUUID(issuer.getUniqueId()).sendMessage(
-                Component.text("Changed display name of channel to '", NamedTextColor.RED).append(serialized).append(Component.text("'", NamedTextColor.RED))
-        );
+        issuer.sendMessage(Component.text("Changed display name of channel to '", NamedTextColor.RED)
+                .append(serialized).append(Component.text("'", NamedTextColor.RED)));
     }
 
 }
