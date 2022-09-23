@@ -70,6 +70,9 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
                 return true;
             }
         }
+        if (playerInvites.isEmpty()) {
+            invites.remove(invitee);
+        }
         return false;
     }
 
