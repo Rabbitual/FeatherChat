@@ -3,11 +3,8 @@ package xyz.mauwh.featherchat.bukkit.messenger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.mauwh.featherchat.bukkit.ComponentPersistentDataType;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
@@ -48,17 +45,9 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
         super.setDisplayName(displayName);
 
         org.bukkit.entity.Player player = getHandle();
-        if (player == null) {
+        if (player == null || displayName == null) {
             return;
         }
-
-        PersistentDataContainer dataContainer = getHandle().getPersistentDataContainer();
-        NamespacedKey displayNameKey = new NamespacedKey(plugin, "displayname");
-        if (displayName == null) {
-            dataContainer.remove(displayNameKey);
-            return;
-        }
-        dataContainer.set(displayNameKey, ComponentPersistentDataType.get(), displayName);
         player.setDisplayName(LegacyComponentSerializer.legacySection().serialize(displayName));
         if (update) {
             plugin.getMessengers().update(this);
