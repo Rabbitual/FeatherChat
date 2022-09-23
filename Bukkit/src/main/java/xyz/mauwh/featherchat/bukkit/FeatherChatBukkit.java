@@ -64,7 +64,7 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         pm.registerEvents(new PlayerJoinQuitListener(messengers), this);
         pm.registerEvents(new PlayerChatListener(this), this);
 
-        Bukkit.getOnlinePlayers().forEach(player -> ((BukkitPlayer)getMessengers().getBySender(player)).validateChannels());
+        Bukkit.getOnlinePlayers().forEach(player -> messengers.getByUUID(player.getUniqueId()).validateChannels());
     }
 
     @Override
@@ -142,7 +142,8 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
             CEC extends CommandExecutionContext<CEC, I>,
             CC extends ConditionContext<I>> void setupCommandManager(@NotNull CommandManager<IT, I, ?, ?, CEC, CC> commandManager) {
         FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(messengers, channels);
-        commandManager.getCommandContexts().registerIssuerOnlyContext(Player.class, contextResolvers::getPlayer);
+        commandManager.getCommandContexts().registerIssuerOnlyContext(Player.class, contextResolvers::getPlayerByIssuer);
+        commandManager.getCommandContexts().registerContext(Player.class, contextResolvers::getPlayerByArgs);
         commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);
         commandManager.getCommandCompletions().registerCompletion("channels", new FeatherChatCommandCompletionHandler(this)::getCompletions);
 

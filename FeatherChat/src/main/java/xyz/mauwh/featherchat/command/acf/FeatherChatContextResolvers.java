@@ -24,8 +24,17 @@ public final class FeatherChatContextResolvers {
     }
 
     @NotNull
-    public Player getPlayer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+    public Player getPlayerByIssuer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
         return messengers.getByUUID(context.getIssuer().getUniqueId());
+    }
+
+    @NotNull
+    public Player getPlayerByArgs(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+        Player player = messengers.getByName(context.popFirstArg());
+        if (player == null) {
+            throw new InvalidCommandArgument("Player could not be found");
+        }
+        return player;
     }
 
     @NotNull

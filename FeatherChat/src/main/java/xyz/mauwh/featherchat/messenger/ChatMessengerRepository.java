@@ -3,6 +3,7 @@ package xyz.mauwh.featherchat.messenger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
@@ -16,6 +17,7 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
 
     private final ChatMessengerFactory<T, U, V> messengerFactory;
     private final Map<T, U> sender2messenger;
+    private final Map<String, V> name2player;
     private final Map<UUID, V> uuid2player;
     private final U console;
     private final YamlPlayerDAO<T, U, V> playerDao;
@@ -23,6 +25,7 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
     public ChatMessengerRepository(@NotNull File dataFolder, @NotNull ChatMessengerFactory<T, U, V> messengerFactory) {
         this.messengerFactory = messengerFactory;
         this.sender2messenger = new WeakHashMap<>();
+        this.name2player = new HashMap<>();
         this.uuid2player = new HashMap<>();
         this.console = messengerFactory.console();
         this.console.setDisplayName(Component.text("Console", NamedTextColor.GOLD));
@@ -45,20 +48,56 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
 
         UUID uuid = ((V)messenger).getUUID();
         V byUUID = uuid2player.get(uuid);
-        V finalMessenger = (V)messenger;
+
+        V finalMessenger = (V)messenger; // Because lambdas dumb
         return (U)Objects.requireNonNullElseGet(byUUID, () -> {
+            V v = finalMessenger;
             try {
-                return playerDao.read(uuid);
+                v = playerDao.read(uuid);
             } catch (DataEntityAccessException err) {
-                playerDao.create(finalMessenger);
-                return finalMessenger;
+                playerDao.create(v);
             }
+            sender2messenger.put(sender, (U)v);
+            name2player.put(v.getName(), v);
+            uuid2player.put(uuid, v);
+            return v;
         });
+    }
+
+    @Nullable
+    public V getByName(@NotNull String name) {
+        return name2player.get(name);
     }
 
     @NotNull
     public V getByUUID(@NotNull UUID uuid) {
-        return uuid2player.computeIfAbsent(uuid, playerDao::read);
+        V player = uuid2player.get(uuid);
+        if (player != null) {
+            return player;
+        }
+        return readOrCreate(uuid);
+    }
+
+    @NotNull
+    @SuppressWarnings("unchecked")
+    private V readOrCreate(@NotNull UUID uuid) {
+        V player = uuid2player.get(uuid);
+        if (player != null) {
+            return player;
+        }
+        player = messengerFactory.player(uuid);
+        try {
+            player = playerDao.read(uuid);
+        } catch (DataEntityAccessException err) {
+            playerDao.create(player);
+        }
+
+        if (player.getHandle() != null) {
+            sender2messenger.put(player.getHandle(), (U)player);
+        }
+        name2player.put(player.getName(), player);
+        uuid2player.put(uuid, player);
+        return player;
     }
 
     @Override
