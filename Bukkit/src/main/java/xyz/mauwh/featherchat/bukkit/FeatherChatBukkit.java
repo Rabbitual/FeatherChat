@@ -11,10 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
+import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerChatListener;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerJoinQuitListener;
+import xyz.mauwh.featherchat.bukkit.scheduler.FeatherChatBukkitScheduler;
 import xyz.mauwh.featherchat.channel.ChatChannelRepository;
 import xyz.mauwh.featherchat.channel.invite.ChannelInvitationsImpl;
 import xyz.mauwh.featherchat.command.FeatherChatChannelSubcommand;
@@ -29,6 +31,7 @@ import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessengerFactory;
 import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayer;
 import xyz.mauwh.featherchat.messenger.ChatMessengerRepository;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
+import xyz.mauwh.featherchat.scheduler.FeatherChatScheduler;
 
 import java.util.Objects;
 
@@ -52,12 +55,14 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         instance = this;
         final BukkitChatMessengerFactory messengerFactory = new BukkitChatMessengerFactory(this);
         this.adventure = BukkitAudiences.create(this);
+
         this.commandManager = new BukkitCommandManager(this);
+        this.channels = new ChatChannelRepository(this);
+        this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
         setupCommandManager(commandManager);
 
-        this.channels = new ChatChannelRepository(this);
-        this.invitations = new ChannelInvitationsImpl();
-        this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
+        FeatherChatScheduler scheduler = new FeatherChatBukkitScheduler(this);
+        this.invitations = new ChannelInvitationsImpl(scheduler);
         this.messageHandler = new ChannelMessageHandler();
 
         PluginManager pm = getServer().getPluginManager();
@@ -142,10 +147,10 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
             CEC extends CommandExecutionContext<CEC, I>,
             CC extends ConditionContext<I>> void setupCommandManager(@NotNull CommandManager<IT, I, ?, ?, CEC, CC> commandManager) {
         FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(messengers, channels);
-        commandManager.getCommandContexts().registerIssuerOnlyContext(Player.class, contextResolvers::getPlayerByIssuer);
-        commandManager.getCommandContexts().registerContext(Player.class, contextResolvers::getPlayerByArgs);
+        commandManager.getCommandContexts().registerIssuerOnlyContext(ChatMessenger.class, contextResolvers::getMessenger);
+        commandManager.getCommandContexts().registerIssuerAwareContext(Player.class, contextResolvers::getPlayer);
         commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);
-        commandManager.getCommandCompletions().registerCompletion("channels", new FeatherChatCommandCompletionHandler(this)::getCompletions);
+        commandManager.getCommandCompletions().registerCompletion("channels", new FeatherChatCommandCompletionHandler(this)::getChannelMatches);
 
         final var conditions = commandManager.getCommandConditions();
         conditions.addCondition("playerOnly", FeatherChatCommandConditions::playerOnly);
@@ -155,7 +160,7 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         conditions.addCondition(String.class, "charLimit", FeatherChatCommandConditions::charLimit);
 
         commandManager.registerCommand(new FeatherChatDefaultCommand(this));
-        commandManager.registerCommand(new FeatherChatDebugSubcommand(this));
+        commandManager.registerCommand(new FeatherChatDebugSubcommand(channels));
         commandManager.registerCommand(new FeatherChatChannelSubcommand(this));
     }
 

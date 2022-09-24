@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
+import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
 
@@ -24,12 +25,15 @@ public final class FeatherChatContextResolvers {
     }
 
     @NotNull
-    public Player getPlayerByIssuer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
-        return messengers.getByUUID(context.getIssuer().getUniqueId());
+    public ChatMessenger getMessenger(CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+        return messengers.getBySender(context.getIssuer().getIssuer());
     }
 
     @NotNull
-    public Player getPlayerByArgs(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+    public Player getPlayer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
+        if (!context.hasFlag("other")) {
+            return messengers.getByUUID(context.getIssuer().getUniqueId());
+        }
         Player player = messengers.getByName(context.popFirstArg());
         if (player == null) {
             throw new InvalidCommandArgument("Player could not be found");
