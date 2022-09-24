@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -44,11 +45,14 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
 
     @Subcommand("invite")
     @Conditions("playerOnly")
+    @CommandCompletion("@channels:owner @players")
     @CommandPermission("featherchat.channel.invite")
-    public void onInvite(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull Player invitee) {
+    public void onInvite(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull @Flags("other") Player invitee) {
         plugin.getInvitations().invite(channel, issuer, invitee);
+        Component inviteeHeaderMsg = text("======= ", GRAY).append(text("FeatherChat", AQUA)).append(text(" =======", GRAY));
         Component inviteeMsg = text("You have been invited to ", GREEN).append(channel.getFriendlyName())
                 .append(text(" by ", GREEN)).append(issuer.getFriendlyName());
+        invitee.sendMessage(inviteeHeaderMsg);
         invitee.sendMessage(inviteeMsg);
         invitee.sendMessage(createInviteeAcceptDenyMessage(channel.getKey()));
         issuer.sendMessage(createIssuerInviteMessage(channel, invitee));
@@ -57,13 +61,14 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @Subcommand("chat")
     @CommandCompletion("@channels")
     @CommandPermission("featherchat.channel.chat")
-    public void onChat(@NotNull Player issuer, @NotNull @Conditions("isMember") UserChatChannel channel, @NotNull @Single String message) {
+    public void onChat(@NotNull Player issuer, @NotNull @Conditions("isMember") UserChatChannel channel, @NotNull String message) {
         channel.sendMessage(issuer, text(message));
     }
 
     @Subcommand("displayname")
     @Conditions("playerOnly")
     @CommandAlias("nickname|nick")
+    @CommandCompletion("@channels:owner")
     @CommandPermission("featherchat.channel.displayname")
     public void onDisplayName(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull @Single @Conditions("channelName|charLimit:max=56") String displayName) {
         Component serialized = LegacyComponentSerializer.legacyAmpersand().deserialize(displayName);
@@ -78,10 +83,15 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
 
     @NotNull
     private Component createInviteeAcceptDenyMessage(@NotNull NamespacedChannelKey key) {
-        Component accept = text("Accept", GREEN, TextDecoration.BOLD).clickEvent(ClickEvent.runCommand("featherchat channel join " + key));
-        Component deny = text("Deny", RED, TextDecoration.BOLD).clickEvent(ClickEvent.runCommand("featherchat channel deny " + key));
+        Component accept = clickAndHoverCommand(text("Accept", GREEN, TextDecoration.BOLD), "featherchat channel join " + key);
+        Component deny = clickAndHoverCommand(text("Deny", RED, TextDecoration.BOLD), "featherchat channel deny " + key);
         return text("[", DARK_GRAY).append(accept).append(text("]", DARK_GRAY))
                 .append(text(" ")).append(text("[", DARK_GRAY)).append(deny).append(text("]", DARK_GRAY));
+    }
+
+    @NotNull
+    private Component clickAndHoverCommand(@NotNull Component component, @NotNull String command) {
+        return component.hoverEvent(HoverEvent.showText(text("Command: /" + command))).clickEvent(ClickEvent.runCommand(command));
     }
 
 }
