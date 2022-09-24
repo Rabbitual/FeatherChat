@@ -10,7 +10,7 @@ public interface ChannelInvitations {
 
     boolean isInvited(@NotNull Player invitee, @NotNull UserChatChannel channel);
 
-    boolean acceptInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel);
+    boolean acceptInvitation(@NotNull ChannelInvitation invite);
 
-    boolean denyInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel);
+    boolean denyInvitation(@NotNull ChannelInvitation invite);
 }
