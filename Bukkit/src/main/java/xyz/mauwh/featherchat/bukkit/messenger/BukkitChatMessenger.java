@@ -87,7 +87,7 @@ public class BukkitChatMessenger implements ChatMessenger {
 
     @Override
     public boolean hasPermission(String permission) {
-        return handle != null && handle.hasPermission(permission);
+        return getHandle() != null && getHandle().hasPermission(permission);
     }
 
     @Override
