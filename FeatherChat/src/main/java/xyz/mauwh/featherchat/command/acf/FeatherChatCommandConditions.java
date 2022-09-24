@@ -30,11 +30,12 @@ public final class FeatherChatCommandConditions {
 
     public static <T extends CommandExecutionContext<T, U>, U extends CommandIssuer> void isOwner(@NotNull ConditionContext<U> context, T cmdContext, @NotNull UserChatChannel channel) throws InvalidCommandArgument {
         UUID issuerUUID = context.getIssuer().getUniqueId();
-        if (!channel.isMember(issuerUUID)) {
+        if (issuerUUID.equals(channel.getOwner())) {
+            return;
+        } else if (!channel.isMember(issuerUUID)) {
             throw new ConditionFailedException("Unable to find channel '" + channel.getName() + "'");
-        } else if (issuerUUID.equals(channel.getOwner())) {
-            throw new ConditionFailedException("You are not the owner of this channel");
         }
+        throw new ConditionFailedException("You are not the owner of this channel");
     }
 
     public static <T extends CommandExecutionContext<T, U>, U extends CommandIssuer> void channelName(@NotNull ConditionContext<U> context, T cmdContext, @NotNull String name) throws InvalidCommandArgument {
