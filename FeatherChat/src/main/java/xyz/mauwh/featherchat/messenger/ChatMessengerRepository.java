@@ -36,32 +36,18 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
     @NotNull
     @SuppressWarnings("unchecked")
     public U getBySender(@NotNull T sender) {
-        U messenger = sender2messenger.get(sender);
+        U messenger = sender2messenger.get(sender); // try get cached messenger by sender
         if (messenger != null) {
             return messenger;
         }
 
-        messenger = messengerFactory.sender(sender);
+        messenger = messengerFactory.sender(sender); //
         if (!(messenger).isPlayer()) {
             return messenger;
         }
 
         UUID uuid = ((V)messenger).getUUID();
-        V byUUID = uuid2player.get(uuid);
-
-        V finalMessenger = (V)messenger; // Because lambdas dumb
-        return (U)Objects.requireNonNullElseGet(byUUID, () -> {
-            V v = finalMessenger;
-            try {
-                v = playerDao.read(uuid);
-            } catch (DataEntityAccessException err) {
-                playerDao.create(v);
-            }
-            sender2messenger.put(sender, (U)v);
-            name2player.put(v.getName(), v);
-            uuid2player.put(uuid, v);
-            return v;
-        });
+        return (U)readOrCreate(uuid);
     }
 
     @Nullable
@@ -108,8 +94,11 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
     @Override
     public void updateAndRemove(@NotNull V player) {
         uuid2player.remove(player.getUUID());
-        //noinspection SuspiciousMethodCalls
-        sender2messenger.remove(player.getHandle(), player);
+        name2player.remove(player.getName());
+        if (player.getHandle() != null) {
+            //noinspection SuspiciousMethodCalls
+            sender2messenger.remove(player.getHandle(), player);
+        }
         playerDao.update(player);
     }
 
