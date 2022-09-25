@@ -56,14 +56,14 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         final BukkitChatMessengerFactory messengerFactory = new BukkitChatMessengerFactory(this);
         this.adventure = BukkitAudiences.create(this);
 
-        this.commandManager = new BukkitCommandManager(this);
-        this.channels = new ChatChannelRepository(this);
-        this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
-        setupCommandManager(commandManager);
-
         FeatherChatScheduler scheduler = new FeatherChatBukkitScheduler(this);
         this.invitations = new ChannelInvitationsImpl(scheduler);
+        this.channels = new ChatChannelRepository(this);
+        this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
         this.messageHandler = new ChannelMessageHandler();
+        this.commandManager = new BukkitCommandManager(this);
+        setupCommandManager(commandManager);
+
 
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerJoinQuitListener(messengers), this);
@@ -152,12 +152,11 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);
         commandManager.getCommandCompletions().registerCompletion("channels", new FeatherChatCommandCompletionHandler(this)::getChannelMatches);
 
-        final var conditions = commandManager.getCommandConditions();
-        conditions.addCondition("playerOnly", FeatherChatCommandConditions::playerOnly);
-        conditions.addCondition(UserChatChannel.class, "isMember", FeatherChatCommandConditions::isMember);
-        conditions.addCondition(UserChatChannel.class, "isOwner", FeatherChatCommandConditions::isOwner);
-        conditions.addCondition(String.class, "channelName", FeatherChatCommandConditions::channelName);
-        conditions.addCondition(String.class, "charLimit", FeatherChatCommandConditions::charLimit);
+        FeatherChatCommandConditions fcConditions = new FeatherChatCommandConditions(messengers, invitations);
+        CommandConditions<I, CEC, CC> conditions = commandManager.getCommandConditions();
+        conditions.addCondition("playerOnly", fcConditions::playerOnly);
+        conditions.addCondition(String.class, "channelName", fcConditions::channelName);
+        conditions.addCondition(String.class, "charLimit", fcConditions::charLimit);
 
         commandManager.registerCommand(new FeatherChatDefaultCommand(this));
         commandManager.registerCommand(new FeatherChatDebugSubcommand(channels));
