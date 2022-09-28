@@ -9,7 +9,7 @@ plugins {
 
 dependencies {
     implementation("co.aikar:acf-core:0.5.0-SNAPSHOT")
-    implementation("org.yaml:snakeyaml:1.30")
+    implementation("org.yaml:snakeyaml:1.32")
     implementation("net.kyori:adventure-text-serializer-legacy:4.11.0")
     implementation(project(":Api"))
 }
