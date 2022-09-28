@@ -12,35 +12,42 @@ import xyz.mauwh.featherchat.scheduler.FeatherChatTask;
 
 import java.util.*;
 
-public class ChannelInvitationsImpl implements ChannelInvitations {
+public class ChannelInvitationsImpl<T extends FeatherChatScheduler<U>, U extends FeatherChatTask> implements ChannelInvitations {
 
-    private final FeatherChatScheduler scheduler;
-    private final Set<ChannelInvitation> invites;
-    private FeatherChatTask task;
+    private final T scheduler;
+    private final Map<Player, Set<ChannelInvitation>> invites;
+    private U task;
 
-    public ChannelInvitationsImpl(@NotNull FeatherChatScheduler scheduler) {
+    public ChannelInvitationsImpl(@NotNull T scheduler) {
         this.scheduler = scheduler;
-        this.invites = new HashSet<>();
+        this.invites = new HashMap<>();
     }
 
     @Override
     @NotNull
     public ChannelInvitation invite(@NotNull UserChatChannel channel, @NotNull Player inviter, @NotNull Player invitee) {
-        ChannelInvitation invite = new ChannelInvitation(channel, inviter, invitee);
-        invites.add(invite);
+        ChannelInvitation invite = new ChannelInvitation(channel, inviter, invitee, 60000L);
+        Set<ChannelInvitation> playerInvites = invites.computeIfAbsent(invitee, k -> new HashSet<>());
+        playerInvites.add(invite);
         if (task == null || task.isCancelled()) {
-            task = scheduler.executeTaskRepeating(() -> {
-                if (invites.remove(invite)) {
-                    invitee.sendMessage(Component.text("Your channel invite has expired", NamedTextColor.RED));
-                }
-            }, 20L, 20L);
+            scheduleInviteExpiration();
         }
         return invite;
     }
 
     @Override
+    @NotNull
+    public Set<ChannelInvitation> getInvitations(Player player) {
+        return invites.get(player);
+    }
+
+    @Override
     public boolean isInvited(@NotNull Player invitee, @NotNull UserChatChannel channel) {
-        for (ChannelInvitation invite : invites) {
+        Set<ChannelInvitation> playerInvites = invites.get(invitee);
+        if (playerInvites == null) {
+            return false;
+        }
+        for (ChannelInvitation invite : playerInvites) {
             if (invite.getChannel().equals(channel)) {
                 return true;
             }
@@ -50,7 +57,8 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
 
     @Override
     public boolean acceptInvitation(@NotNull ChannelInvitation invite) {
-        if (!invites.remove(invite)) {
+        Set<ChannelInvitation> playerInvites = invites.get(invite.getInvitee());
+        if (!playerInvites.remove(invite)) {
             return false;
         }
         Player invitee = invite.getInvitee();
@@ -62,7 +70,29 @@ public class ChannelInvitationsImpl implements ChannelInvitations {
 
     @Override
     public boolean denyInvitation(@NotNull ChannelInvitation invite) {
-        return invites.remove(invite);
+        return getInvitations(invite.getInvitee()).remove(invite);
+    }
+
+    private void scheduleInviteExpiration() {
+        task = scheduler.executeTaskRepeating(() -> {
+            Iterator<Map.Entry<Player, Set<ChannelInvitation>>> mapIter = invites.entrySet().iterator();
+            while (mapIter.hasNext()) {
+                Map.Entry<Player, Set<ChannelInvitation>> entry = mapIter.next();
+                Player invitee = entry.getKey();
+                Set<ChannelInvitation> playerInvites = entry.getValue();
+                playerInvites.removeIf(invitation -> {
+                    boolean expired = invitation.getExpiryTime() < System.currentTimeMillis();
+                    if (expired && invitee.isOnline()) {
+                        invitee.sendMessage(Component.text("Your channel invite has expired", NamedTextColor.RED));
+                    }
+                    return true;
+                });
+                if (playerInvites.isEmpty()) {
+                    mapIter.remove();
+                }
+                scheduler.cancelTask(task);
+            }
+        }, 20L, 20L);
     }
 
 }

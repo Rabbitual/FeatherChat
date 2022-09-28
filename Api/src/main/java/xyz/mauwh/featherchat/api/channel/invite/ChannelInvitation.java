@@ -9,13 +9,13 @@ public final class ChannelInvitation {
     private final UserChatChannel channel;
     private final Player inviter;
     private final Player invitee;
-    private final long timestamp;
+    private final long expiryTime;
 
-    public ChannelInvitation(@NotNull UserChatChannel channel, @NotNull Player inviter, @NotNull Player invitee) {
+    public ChannelInvitation(@NotNull UserChatChannel channel, @NotNull Player inviter, @NotNull Player invitee, long expiryTimeMillis) {
         this.channel = channel;
         this.inviter = inviter;
         this.invitee = invitee;
-        this.timestamp = System.currentTimeMillis();
+        this.expiryTime = System.currentTimeMillis() + expiryTimeMillis;
     }
 
     @NotNull
@@ -33,8 +33,8 @@ public final class ChannelInvitation {
         return invitee;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getExpiryTime() {
+        return expiryTime;
     }
 
 }

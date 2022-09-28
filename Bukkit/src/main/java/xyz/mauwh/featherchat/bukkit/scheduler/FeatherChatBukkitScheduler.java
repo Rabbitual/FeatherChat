@@ -4,9 +4,8 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.scheduler.FeatherChatScheduler;
-import xyz.mauwh.featherchat.scheduler.FeatherChatTask;
 
-public final class FeatherChatBukkitScheduler implements FeatherChatScheduler {
+public final class FeatherChatBukkitScheduler implements FeatherChatScheduler<FeatherChatBukkitTask> {
 
     private final FeatherChatBukkit plugin;
 
@@ -16,14 +15,19 @@ public final class FeatherChatBukkitScheduler implements FeatherChatScheduler {
 
     @Override
     @NotNull
-    public FeatherChatTask executeTaskLater(@NotNull Runnable task, long delayInTicks) {
+    public FeatherChatBukkitTask executeTaskLater(@NotNull Runnable task, long delayInTicks) {
         return new FeatherChatBukkitTask(Bukkit.getScheduler().runTaskLater(plugin, task, delayInTicks));
     }
 
     @Override
     @NotNull
-    public FeatherChatTask executeTaskRepeating(@NotNull Runnable task, long initialDelayInTicks, long intervalInTicks) {
+    public FeatherChatBukkitTask executeTaskRepeating(@NotNull Runnable task, long initialDelayInTicks, long intervalInTicks) {
         return new FeatherChatBukkitTask(Bukkit.getScheduler().runTaskTimer(plugin, task, initialDelayInTicks, intervalInTicks));
+    }
+
+    @Override
+    public void cancelTask(@NotNull FeatherChatBukkitTask task) {
+        Bukkit.getScheduler().cancelTask(task.getTaskId());
     }
 
 }

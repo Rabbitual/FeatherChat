@@ -12,6 +12,10 @@ public class FeatherChatBukkitTask implements FeatherChatTask {
         this.task = task;
     }
 
+    public int getTaskId() {
+        return task.getTaskId();
+    }
+
     @Override
     public boolean isCancelled() {
         return task.isCancelled();
