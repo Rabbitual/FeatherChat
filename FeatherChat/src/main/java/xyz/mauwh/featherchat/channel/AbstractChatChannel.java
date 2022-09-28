@@ -12,9 +12,11 @@ import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public abstract class AbstractChatChannel implements ChatChannel {
 
@@ -120,12 +122,17 @@ public abstract class AbstractChatChannel implements ChatChannel {
     }
 
     @Override
+    public void sendMessage(@NotNull Component component) {
+        sendMessage(plugin.getMessengers().getConsole(), component);
+    }
+
+    @Override
     public void sendMessage(@NotNull ChatMessenger sender, @NotNull Component component) {
+        Objects.requireNonNull(sender, "null sender");
         ChannelMessage message = new ChannelMessage(this, sender, component);
         Component finalMessage = plugin.getMessageHandler().formatMessage(message);
-        Audience receiving = plugin.getAdventure().players().filterAudience(audience ->
-                isMember(plugin.getMessengers().getByUUID(audience.get(Identity.UUID).orElseThrow()))
-        );
+        Predicate<Audience> filter = audience -> isMember(plugin.getMessengers().getByUUID(audience.get(Identity.UUID).orElseThrow()));
+        Audience receiving = plugin.getAdventure().players().filterAudience(filter);
         if (consoleLogging) {
             receiving = Audience.audience(receiving, plugin.getAdventure().console());
         }

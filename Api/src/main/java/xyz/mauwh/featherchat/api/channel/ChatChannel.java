@@ -38,5 +38,7 @@ public interface ChatChannel {
 
     boolean removeMember(@NotNull Player member);
 
+    void sendMessage(@NotNull Component component);
+
     void sendMessage(@NotNull ChatMessenger sender, @NotNull Component component);
 }
