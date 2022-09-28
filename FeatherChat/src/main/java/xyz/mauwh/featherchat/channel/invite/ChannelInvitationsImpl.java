@@ -69,8 +69,21 @@ public class ChannelInvitationsImpl<T extends FeatherChatScheduler<U>, U extends
     }
 
     @Override
-    public boolean denyInvitation(@NotNull ChannelInvitation invite) {
+    public boolean removeInvitation(@NotNull ChannelInvitation invite) {
         return getInvitations(invite.getInvitee()).remove(invite);
+    }
+
+    @Override
+    public boolean removeInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel) {
+        Set<ChannelInvitation> invites = getInvitations(invitee);
+        Iterator<ChannelInvitation> iter = invites.iterator();
+        while (iter.hasNext()) {
+            if (iter.next().getChannel().equals(channel)) {
+                iter.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     private void scheduleInviteExpiration() {
