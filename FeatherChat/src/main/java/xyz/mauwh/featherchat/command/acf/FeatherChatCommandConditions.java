@@ -2,12 +2,9 @@ package xyz.mauwh.featherchat.command.acf;
 
 import co.aikar.commands.*;
 import org.jetbrains.annotations.NotNull;
-import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
-import xyz.mauwh.featherchat.api.messenger.Player;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 public final class FeatherChatCommandConditions {
