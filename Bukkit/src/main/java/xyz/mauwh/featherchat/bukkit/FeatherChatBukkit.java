@@ -17,6 +17,7 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerChatListener;
 import xyz.mauwh.featherchat.bukkit.listener.PlayerJoinQuitListener;
 import xyz.mauwh.featherchat.bukkit.scheduler.FeatherChatBukkitScheduler;
+import xyz.mauwh.featherchat.bukkit.scheduler.FeatherChatBukkitTask;
 import xyz.mauwh.featherchat.channel.ChatChannelRepository;
 import xyz.mauwh.featherchat.channel.invite.ChannelInvitationsImpl;
 import xyz.mauwh.featherchat.command.FeatherChatChannelSubcommand;
@@ -56,8 +57,8 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         final BukkitChatMessengerFactory messengerFactory = new BukkitChatMessengerFactory(this);
         this.adventure = BukkitAudiences.create(this);
 
-        FeatherChatScheduler scheduler = new FeatherChatBukkitScheduler(this);
-        this.invitations = new ChannelInvitationsImpl(scheduler);
+        FeatherChatScheduler<FeatherChatBukkitTask> scheduler = new FeatherChatBukkitScheduler(this);
+        this.invitations = new ChannelInvitationsImpl<>(scheduler);
         this.channels = new ChatChannelRepository(this);
         this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
         this.messageHandler = new ChannelMessageHandler();
@@ -146,7 +147,7 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
     public <IT, I extends CommandIssuer,
             CEC extends CommandExecutionContext<CEC, I>,
             CC extends ConditionContext<I>> void setupCommandManager(@NotNull CommandManager<IT, I, ?, ?, CEC, CC> commandManager) {
-        FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(messengers, channels);
+        FeatherChatContextResolvers contextResolvers = new FeatherChatContextResolvers(this);
         commandManager.getCommandContexts().registerIssuerOnlyContext(ChatMessenger.class, contextResolvers::getMessenger);
         commandManager.getCommandContexts().registerIssuerAwareContext(Player.class, contextResolvers::getPlayer);
         commandManager.getCommandContexts().registerContext(UserChatChannel.class, contextResolvers::getUserChatChannel);

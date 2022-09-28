@@ -2,26 +2,31 @@ package xyz.mauwh.featherchat.command.acf;
 
 import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.annotation.Conditions;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
+import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitation;
+import xyz.mauwh.featherchat.api.channel.invite.ChannelInvitations;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
-import java.util.Collection;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class FeatherChatContextResolvers {
 
-    private final ChatMessengers<?, ?, ?> messengers;
+    private final ChatMessengers<?, ? extends ChatMessenger, ? extends Player> messengers;
     private final ChatChannels channelRepository;
+    private final ChannelInvitations invitations;
 
-    public FeatherChatContextResolvers(@NotNull ChatMessengers<?, ?, ?> messengers, @NotNull ChatChannels channelRepository) {
-        this.messengers = messengers;
-        this.channelRepository = channelRepository;
+    public FeatherChatContextResolvers(@NotNull FeatherChatPlugin plugin) {
+        this.messengers = plugin.getMessengers();
+        this.channelRepository = plugin.getChannels();
+        this.invitations = plugin.getInvitations();
     }
 
     @NotNull
@@ -46,29 +51,35 @@ public final class FeatherChatContextResolvers {
         String channelId = context.popFirstArg();
         String[] parts = channelId.split(":");
 
-        UserChatChannel channel;
+        ChatMessenger messenger = messengers.getBySender(context.getIssuer().getIssuer());
+        if (!messenger.isPlayer()) {
+            throw new InvalidCommandArgument("Only players may use this command");
+        }
+        Player player = (Player)messenger;
+
+        Set<UserChatChannel> channels;
+        if (context.hasFlag("invited")) {
+            channels = invitations.getInvitations(player).stream().map(ChannelInvitation::getChannel).collect(Collectors.toSet());
+        } else if (context.hasFlag("owned")) {
+            channels = channelRepository.filterByOwner(context.getIssuer().getUniqueId());
+        } else {
+            channels = channelRepository.filterByName(parts[0].toLowerCase(Locale.ROOT));
+        }
+
         if (parts.length == 1) {
-            String name = parts[0].toLowerCase(Locale.ROOT);
-            Collection<? extends UserChatChannel> userChannels = channelRepository.filterByName(name);
-            if (userChannels.size() > 1) {
+            if (channels.size() > 1) {
                 throw new InvalidCommandArgument("Channel name '" + parts[0] + "' is ambiguous - please try using the channel ID (<owner>:<channel name>)", false);
-            } else if (userChannels.size() == 0) {
+            } else if (channels.size() == 0) {
                 throw new InvalidCommandArgument("Unable to find channel '" + parts[0] + "'", false);
             }
-            channel = userChannels.toArray(UserChatChannel[]::new)[0];
-        } else {
-            NamespacedChannelKey key = new NamespacedChannelKey(parts[0], parts[1]);
-            channel = channelRepository.resolveByKey(key);
-            if (channel == null) {
-                throw new InvalidCommandArgument("Unable to find channel '" + key + "'", false);
-            }
+            return channels.iterator().next();
         }
 
-        String value = context.getAnnotationValue(Conditions.class);
-        if (value != null && value.equals("isMember") && !channel.isMember(context.getIssuer().getUniqueId())) {
-            throw new InvalidCommandArgument("Unable to find channel '" + channelId.toLowerCase(Locale.ROOT) + "'", false);
+        NamespacedChannelKey key = new NamespacedChannelKey(parts[0], parts[1]);
+        UserChatChannel channel = channelRepository.resolveByKey(key);
+        if (channel == null) {
+            throw new InvalidCommandArgument("Unable to find channel '" + key + "'", false);
         }
-
         return channel;
     }
 
