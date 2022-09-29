@@ -111,7 +111,7 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
 
     @Override
     public boolean isOnline() {
-        return getHandle() == null;
+        return getHandle() != null;
     }
 
     @Override
