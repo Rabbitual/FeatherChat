@@ -20,21 +20,37 @@ public final class ChannelInvitation {
         this.expiryTime = System.currentTimeMillis() + expiryTimeMillis;
     }
 
+    /**
+     * Gets the target chat channel of this invitation
+     * @return The target chat channel of this invitation
+     */
     @NotNull
     public UserChatChannel getChannel() {
         return channel;
     }
 
+    /**
+     * Gets the issuer of this invitation.
+     * @return The issuer of this invitation
+     */
     @NotNull
     public Player getInviter() {
         return inviter;
     }
 
+    /**
+     * Gets the invitee of this invitation.
+     * @return The invitee of this invitation
+     */
     @NotNull
     public Player getInvitee() {
         return invitee;
     }
 
+    /**
+     * Gets the expiration time of this invitation.
+     * @return The expiry time of this invitation
+     */
     public long getExpiryTime() {
         return expiryTime;
     }

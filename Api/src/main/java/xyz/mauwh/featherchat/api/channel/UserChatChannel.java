@@ -6,7 +6,16 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import java.util.UUID;
 
 public interface UserChatChannel extends ChatChannel {
+    /**
+     * Gets the UUID of this channel's owner.
+     * @return The channel owner's UUID
+     */
     @NotNull UUID getOwner();
+
+    /**
+     * Sets the owner of this channel.
+     * @param owner - The new channel owner
+     */
     void setOwner(@NotNull UUID owner);
 
     /**
