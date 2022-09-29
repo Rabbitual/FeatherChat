@@ -83,15 +83,17 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     }
 
     @Override
-    public void addChannel(@NotNull ChatChannel channel) {
-        this.channels.add(channel.getUUID());
+    public boolean addChannel(@NotNull ChatChannel channel) {
+        boolean result = channels.add(channel.getUUID());
         plugin.getMessengers().update(this);
+        return result;
     }
 
     @Override
-    public void removeChannel(@NotNull ChatChannel channel) {
-        this.channels.remove(channel.getUUID());
+    public boolean removeChannel(@NotNull ChatChannel channel) {
+        boolean result = channels.remove(channel.getUUID());
         plugin.getMessengers().update(this);
+        return result;
     }
 
     @Override
@@ -110,6 +112,16 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     @Override
     public boolean isOnline() {
         return getHandle() == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o) && uuid.equals(((BukkitPlayer)o).uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), uuid);
     }
 
     @Override

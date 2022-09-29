@@ -1,7 +1,6 @@
 package xyz.mauwh.featherchat.messenger;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
@@ -12,6 +11,9 @@ import xyz.mauwh.featherchat.store.yaml.YamlPlayerDAO;
 
 import java.io.File;
 import java.util.*;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends Player> implements ChatMessengers<T, U, V> {
 
@@ -28,7 +30,7 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
         this.name2player = new HashMap<>();
         this.uuid2player = new HashMap<>();
         this.console = messengerFactory.console();
-        this.console.setDisplayName(Component.text("Console", NamedTextColor.GOLD));
+        this.console.setDisplayName(text("Feather", AQUA, TextDecoration.BOLD).append(text("Chat", GOLD, TextDecoration.BOLD)));
         this.playerDao = new YamlPlayerDAO<>(dataFolder, messengerFactory);
     }
 

@@ -14,8 +14,6 @@ public interface ChannelInvitations {
 
     boolean isInvited(@NotNull Player invitee, @NotNull UserChatChannel channel);
 
-    boolean acceptInvitation(@NotNull ChannelInvitation invite);
-
     boolean removeInvitation(@NotNull ChannelInvitation invite);
 
     boolean removeInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel);

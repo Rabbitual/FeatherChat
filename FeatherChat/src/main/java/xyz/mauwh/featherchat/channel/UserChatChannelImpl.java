@@ -9,6 +9,7 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,12 +64,20 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
 
     @Override
     public boolean addMember(@NotNull Player player) {
-        return members.add(player.getUUID());
+        if (members.add(player.getUUID())) {
+            plugin.getChannels().updateChannel(this);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean removeMember(@NotNull Player player) {
-        return members.remove(player.getUUID());
+        if (members.remove(player.getUUID())) {
+            plugin.getChannels().updateChannel(this);
+            return true;
+        }
+        return false;
     }
 
     public void sendDissolutionMessage() {
@@ -78,6 +87,16 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
         getMembers().stream().map(plugin.getMessengers()::getByUUID).filter(Player::isOnline).forEach(recipient -> recipient.sendMessage(dissolutionMsg));
         owner.sendMessage(Component.text("You have dissolved your channel '", NamedTextColor.RED)
                 .append(getFriendlyName()).append(Component.text("'", NamedTextColor.RED)));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o) && owner.equals(((UserChatChannelImpl)o).owner);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUUID(), getKey(), getName(), owner);
     }
 
 }

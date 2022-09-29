@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
 
+import java.util.Objects;
+
 public final class ChannelInvitation {
 
     private final UserChatChannel channel;
@@ -35,6 +37,24 @@ public final class ChannelInvitation {
 
     public long getExpiryTime() {
         return expiryTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        final ChannelInvitation other = (ChannelInvitation) o;
+        return channel.equals(other.channel) && inviter.equals(other.inviter)
+                && invitee.equals(other.invitee) && expiryTime == other.expiryTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(channel, inviter, invitee, expiryTime);
     }
 
 }

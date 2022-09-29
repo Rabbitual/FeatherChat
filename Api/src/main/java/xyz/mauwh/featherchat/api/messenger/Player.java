@@ -10,8 +10,8 @@ public interface Player extends ChatMessenger {
     @NotNull UUID getUUID();
     @NotNull String getName();
     @NotNull Set<UUID> getChannels();
-    void addChannel(@NotNull ChatChannel channel);
-    void removeChannel(@NotNull ChatChannel channel);
+    boolean addChannel(@NotNull ChatChannel channel);
+    boolean removeChannel(@NotNull ChatChannel channel);
     void validateChannels();
     boolean isOnline();
 }

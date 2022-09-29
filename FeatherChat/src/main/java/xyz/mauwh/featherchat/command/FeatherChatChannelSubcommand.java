@@ -24,7 +24,6 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 @CommandPermission("featherchat.channel")
 public final class FeatherChatChannelSubcommand extends BaseCommand {
 
-    private final Component prefix = text("[", GRAY).append(text("FeatherChat", AQUA)).append(text("] ", GRAY));
     private final FeatherChatPlugin plugin;
     private final ChatChannels channelRepository;
 
@@ -49,12 +48,12 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @Conditions("playerOnly")
     @CommandCompletion("@channels:owner @players")
     @CommandPermission("featherchat.channel.invite")
-    public void onInvite(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull @Flags("other") Player invitee) {
+    public void onInvite(@NotNull Player issuer, @NotNull @Flags("owned") UserChatChannel channel, @NotNull @Flags("other") Player invitee) {
         if (channel.isMember(invitee)) {
-            throw new InvalidCommandArgument("Invitee already belongs to this channel", false);
+            throw new InvalidCommandArgument("Invitee already belongs to the specified channel", false);
         }
         plugin.getInvitations().invite(channel, issuer, invitee);
-        Component inviteeMsg = prefix.append(text("You have been invited to ", GREEN)).append(channel.getFriendlyName())
+        Component inviteeMsg = text("You have been invited to ", GREEN).append(channel.getFriendlyName())
                 .append(text(" by ", GREEN)).append(issuer.getFriendlyName());
         invitee.sendMessage(inviteeMsg);
         invitee.sendMessage(createInviteeAcceptDenyMessage(channel.getKey()));
@@ -65,25 +64,33 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @Conditions("playerOnly")
     @CommandCompletion("@channels:invited")
     @CommandPermission("featherchat.channel.join")
-    public void onJoin(@NotNull Player issuer, @NotNull @Conditions("isInvited") UserChatChannel channel) {
-        channel.sendMessage(prefix.append(issuer.getFriendlyName()).append(text(" has joined the channel", GREEN)));
-        issuer.sendMessage(text("You have joined ", GREEN).append(channel.getFriendlyName()));
-        channel.addMember(issuer);
+    public void onJoin(@NotNull Player issuer, @NotNull @Flags("invited") UserChatChannel channel) {
+        if (!plugin.getInvitations().removeInvitation(issuer, channel)) {
+            throw new InvalidCommandArgument("You do not have a pending invite to the specified channel", false);
+        }
+        if (issuer.addChannel(channel)) {
+            channel.sendMessage(issuer.getFriendlyName().append(text(" has joined the channel", GREEN)));
+        }
+        if (channel.addMember(issuer)) {
+            issuer.sendMessage(text("You have joined ", GREEN).append(channel.getFriendlyName()));
+        }
     }
 
     @Subcommand("deny|reject")
     @Conditions("playerOnly")
     @CommandCompletion("@channels:invited")
     @CommandPermission("featherchat.channel.deny")
-    public void onDeny(@NotNull Player issuer, @NotNull @Conditions("isInvited") UserChatChannel channel) {
-        plugin.getInvitations().removeInvitation(issuer, channel);
+    public void onDeny(@NotNull Player issuer, @NotNull @Flags("invited") UserChatChannel channel) {
+        if (!plugin.getInvitations().removeInvitation(issuer, channel)) {
+            throw new InvalidCommandArgument("You do not have a pending invite to the specified channel", false);
+        }
         issuer.sendMessage(text("You have denied your invitation to ", RED).append(channel.getFriendlyName()));
     }
 
     @Subcommand("chat")
     @CommandCompletion("@channels")
     @CommandPermission("featherchat.channel.chat")
-    public void onChat(@NotNull Player issuer, @NotNull @Conditions("isMember") UserChatChannel channel, @NotNull String message) {
+    public void onChat(@NotNull Player issuer, @NotNull UserChatChannel channel, @NotNull String message) {
         channel.sendMessage(issuer, text(message));
     }
 
@@ -92,7 +99,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @CommandAlias("nickname|nick")
     @CommandCompletion("@channels:owner")
     @CommandPermission("featherchat.channel.displayname")
-    public void onDisplayName(@NotNull Player issuer, @NotNull @Conditions("isOwner") UserChatChannel channel, @NotNull @Single @Conditions("channelName|charLimit:max=56") String displayName) {
+    public void onDisplayName(@NotNull Player issuer, @NotNull @Flags("owned") UserChatChannel channel, @NotNull @Single @Conditions("channelName|charLimit:max=56") String displayName) {
         Component serialized = LegacyComponentSerializer.legacyAmpersand().deserialize(displayName);
         channel.setDisplayName(serialized);
         issuer.sendMessage(text("Changed display name of channel to '", RED).append(serialized).append(text("'", RED)));
@@ -113,7 +120,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
 
     @NotNull
     private Component clickAndHoverCommand(@NotNull Component component, @NotNull String command) {
-        return component.hoverEvent(HoverEvent.showText(text("Command: /" + command))).clickEvent(ClickEvent.runCommand(command));
+        return component.hoverEvent(HoverEvent.showText(text("Command: /" + command))).clickEvent(ClickEvent.runCommand("/"+command));
     }
 
 }

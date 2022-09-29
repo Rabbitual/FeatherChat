@@ -139,4 +139,21 @@ public abstract class AbstractChatChannel implements ChatChannel {
         receiving.sendMessage(sender, finalMessage);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        final AbstractChatChannel other = (AbstractChatChannel) o;
+        return uuid.equals(other.uuid) && key.equals(other.key) && name.equals(other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, key, name);
+    }
+
 }

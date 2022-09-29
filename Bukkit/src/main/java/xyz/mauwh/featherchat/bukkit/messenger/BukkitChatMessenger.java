@@ -105,7 +105,12 @@ public class BukkitChatMessenger implements ChatMessenger {
             return false;
         }
         final BukkitChatMessenger other = (BukkitChatMessenger)o;
-        return handle.equals(other.handle) && name.equals(other.name);
+        return name.equals(other.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Override

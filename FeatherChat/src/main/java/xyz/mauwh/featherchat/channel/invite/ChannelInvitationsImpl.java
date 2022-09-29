@@ -38,7 +38,8 @@ public class ChannelInvitationsImpl<T extends FeatherChatScheduler<U>, U extends
     @Override
     @NotNull
     public Set<ChannelInvitation> getInvitations(Player player) {
-        return invites.get(player);
+        Set<ChannelInvitation> playerInvites = invites.get(player);
+        return playerInvites != null ? Set.copyOf(playerInvites) : Collections.emptySet();
     }
 
     @Override
@@ -56,32 +57,34 @@ public class ChannelInvitationsImpl<T extends FeatherChatScheduler<U>, U extends
     }
 
     @Override
-    public boolean acceptInvitation(@NotNull ChannelInvitation invite) {
-        Set<ChannelInvitation> playerInvites = invites.get(invite.getInvitee());
-        if (!playerInvites.remove(invite)) {
-            return false;
-        }
-        Player invitee = invite.getInvitee();
-        UserChatChannel channel = invite.getChannel();
-        invitee.addChannel(channel);
-        channel.addMember(invitee);
-        return true;
-    }
-
-    @Override
     public boolean removeInvitation(@NotNull ChannelInvitation invite) {
-        return getInvitations(invite.getInvitee()).remove(invite);
+        Set<ChannelInvitation> playerInvites = invites.get(invite.getInvitee());
+        if (playerInvites != null && playerInvites.remove(invite)) {
+            if (playerInvites.isEmpty()) {
+                invites.remove(invite.getInvitee());
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean removeInvitation(@NotNull Player invitee, @NotNull UserChatChannel channel) {
-        Set<ChannelInvitation> invites = getInvitations(invitee);
-        Iterator<ChannelInvitation> iter = invites.iterator();
+        Set<ChannelInvitation> playerInvites = invites.get(invitee);
+        if (playerInvites == null) {
+            return false;
+        }
+        Iterator<ChannelInvitation> iter = playerInvites.iterator();
         while (iter.hasNext()) {
-            if (iter.next().getChannel().equals(channel)) {
-                iter.remove();
-                return true;
+            UserChatChannel channel1 = iter.next().getChannel();
+            if (!channel.getUUID().equals(channel1.getUUID())) {
+                continue;
             }
+            iter.remove();
+            if (playerInvites.isEmpty()) {
+                invites.remove(invitee);
+            }
+            return true;
         }
         return false;
     }
@@ -98,7 +101,7 @@ public class ChannelInvitationsImpl<T extends FeatherChatScheduler<U>, U extends
                     if (expired && invitee.isOnline()) {
                         invitee.sendMessage(Component.text("Your channel invite has expired", NamedTextColor.RED));
                     }
-                    return true;
+                    return expired;
                 });
                 if (playerInvites.isEmpty()) {
                     mapIter.remove();
