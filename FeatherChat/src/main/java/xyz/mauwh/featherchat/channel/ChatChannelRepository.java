@@ -6,10 +6,9 @@ import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 import xyz.mauwh.featherchat.store.yaml.YamlChatChannelDAO;
 
 import java.util.HashMap;
@@ -20,13 +19,13 @@ import java.util.stream.Collectors;
 
 public final class ChatChannelRepository implements ChatChannels {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
     private final ChatChannel debugChannel;
     private final Map<UUID, UserChatChannel> uuid2channel;
     private final Map<NamespacedChannelKey, UserChatChannel> key2channel;
     private final YamlChatChannelDAO chatChannelDAO;
 
-    public ChatChannelRepository(@NotNull FeatherChatAccessible plugin) {
+    public ChatChannelRepository(@NotNull FeatherChatPlugin plugin) {
         this.plugin = plugin;
         this.debugChannel = new AbstractChatChannel(plugin, "debug") {
             @Override
@@ -34,7 +33,7 @@ public final class ChatChannelRepository implements ChatChannels {
                 return isMember(plugin.getMessengers().getByUUID(member));
             }
             @Override
-            public boolean isMember(@NotNull ChatMessenger<?> member) {
+            public boolean isMember(@NotNull Player member) {
                 return member.hasPermission("featherchat.debug");
             }
         };
@@ -59,7 +58,7 @@ public final class ChatChannelRepository implements ChatChannels {
      * @return the newly created chat channel
      */
     @NotNull
-    public ChatChannel createChannel(@NotNull Player<?> owner, @NotNull String name) {
+    public ChatChannel createChannel(@NotNull Player owner, @NotNull String name) {
         NamespacedChannelKey key = new NamespacedChannelKey(owner, name);
         if (key2channel.get(key) != null) {
             throw new IllegalArgumentException("Channel with key '" + key + "' already exists");
@@ -140,7 +139,7 @@ public final class ChatChannelRepository implements ChatChannels {
     }
 
     @NotNull
-    public Set<UserChatChannel> filterByOwner(@NotNull Player<?> owner) {
+    public Set<UserChatChannel> filterByOwner(@NotNull Player owner) {
         return key2channel.values().stream().filter(channel -> channel.getOwner().equals(owner.getUUID())).collect(Collectors.toSet());
     }
 
@@ -150,7 +149,7 @@ public final class ChatChannelRepository implements ChatChannels {
     }
 
     @NotNull
-    public Set<UserChatChannel> filterByParticipant(@NotNull Player<?> participant) {
+    public Set<UserChatChannel> filterByParticipant(@NotNull Player participant) {
         return participant.getChannels().stream().map(this::resolveByUUID).collect(Collectors.toSet());
     }
 

@@ -3,12 +3,8 @@ package xyz.mauwh.featherchat.bukkit.messenger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.command.CommandSender;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.mauwh.featherchat.bukkit.ComponentPersistentDataType;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
@@ -17,7 +13,7 @@ import xyz.mauwh.featherchat.messenger.PlayerAccessible;
 
 import java.util.*;
 
-public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAccessible<CommandSender>, Player<CommandSender> {
+public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAccessible, Player {
 
     private final UUID uuid;
     private final Set<UUID> channels;
@@ -49,17 +45,9 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
         super.setDisplayName(displayName);
 
         org.bukkit.entity.Player player = getHandle();
-        if (player == null) {
+        if (player == null || displayName == null) {
             return;
         }
-
-        PersistentDataContainer dataContainer = getHandle().getPersistentDataContainer();
-        NamespacedKey displayNameKey = new NamespacedKey(plugin, "displayname");
-        if (displayName == null) {
-            dataContainer.remove(displayNameKey);
-            return;
-        }
-        dataContainer.set(displayNameKey, ComponentPersistentDataType.get(), displayName);
         player.setDisplayName(LegacyComponentSerializer.legacySection().serialize(displayName));
         if (update) {
             plugin.getMessengers().update(this);
@@ -68,6 +56,7 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
 
     @Override
     @Nullable
+    @SuppressWarnings("unchecked")
     public org.bukkit.entity.Player getHandle() {
         return Bukkit.getPlayer(uuid);
     }
@@ -94,15 +83,17 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     }
 
     @Override
-    public void addChannel(@NotNull ChatChannel channel) {
-        this.channels.add(channel.getUUID());
+    public boolean addChannel(@NotNull ChatChannel channel) {
+        boolean result = channels.add(channel.getUUID());
         plugin.getMessengers().update(this);
+        return result;
     }
 
     @Override
-    public void removeChannel(@NotNull ChatChannel channel) {
-        this.channels.remove(channel.getUUID());
+    public boolean removeChannel(@NotNull ChatChannel channel) {
+        boolean result = channels.remove(channel.getUUID());
         plugin.getMessengers().update(this);
+        return result;
     }
 
     @Override
@@ -120,7 +111,17 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
 
     @Override
     public boolean isOnline() {
-        return getHandle() == null;
+        return getHandle() != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o) && uuid.equals(((BukkitPlayer)o).uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), uuid);
     }
 
     @Override
