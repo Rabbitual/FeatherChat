@@ -9,5 +9,16 @@ public interface UserChatChannel extends ChatChannel {
     @NotNull UUID getOwner();
     void setOwner(@NotNull UUID owner);
 
+    /**
+     * Sets the owner of this channel.
+     * @param owner - The new channel owner
+     */
+    void setOwner(@NotNull Player owner);
+
+    /**
+     * Removes the provided player from this channel's members.
+     * @param player - The player to be removed as a member
+     * @return true if this player was successfully removed as a member
+     */
     boolean removeMember(@NotNull Player player);
 }

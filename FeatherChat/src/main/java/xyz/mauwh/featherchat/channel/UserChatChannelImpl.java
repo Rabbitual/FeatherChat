@@ -35,6 +35,11 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
     }
 
     @Override
+    public void setOwner(@NotNull Player owner) {
+        this.owner = owner.getUUID();
+    }
+
+    @Override
     @NotNull
     public UUID getOwner() {
         return owner;
