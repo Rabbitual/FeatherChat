@@ -7,10 +7,10 @@ import org.yaml.snakeyaml.Yaml;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.channel.ChannelAccessible;
+import xyz.mauwh.featherchat.channel.AbstractChatChannel;
 import xyz.mauwh.featherchat.channel.UserChatChannelImpl;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
-import xyz.mauwh.featherchat.plugin.FeatherChatAccessible;
+import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 import xyz.mauwh.featherchat.store.DataAccessObject;
 
 import java.io.*;
@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 
 public final class YamlChatChannelDAO implements DataAccessObject<UserChatChannel, UUID> {
 
-    private final FeatherChatAccessible plugin;
+    private final FeatherChatPlugin plugin;
     private final File channelsDir;
 
-    public YamlChatChannelDAO(@NotNull FeatherChatAccessible plugin) {
+    public YamlChatChannelDAO(@NotNull FeatherChatPlugin plugin) {
         this.plugin = plugin;
         this.channelsDir = new File(plugin.getDataFolder(), "channels");
     }
@@ -90,7 +90,7 @@ public final class YamlChatChannelDAO implements DataAccessObject<UserChatChanne
     }
 
     @NotNull
-    public static UserChatChannel deserialize(@NotNull FeatherChatAccessible plugin, @NotNull Map<String, Object> values) throws IllegalArgumentException {
+    public static UserChatChannel deserialize(@NotNull FeatherChatPlugin plugin, @NotNull Map<String, Object> values) throws IllegalArgumentException {
         MiniMessage miniMessage = MiniMessage.miniMessage();
 
         String[] parts = ((String)values.get("key")).split(":");
@@ -115,7 +115,7 @@ public final class YamlChatChannelDAO implements DataAccessObject<UserChatChanne
         }).filter(Objects::nonNull).collect(Collectors.toSet());
 
         UserChatChannel channel = new UserChatChannelImpl(plugin, uuid, key, owner, name);
-        ((ChannelAccessible)channel).setMembers(members);
+        ((AbstractChatChannel)channel).setMembers(members);
         channel.setDisplayName(displayName);
         channel.setMessageFormat(messageFormat);
         return channel;

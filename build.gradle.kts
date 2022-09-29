@@ -18,15 +18,11 @@ dependencies {
     implementation(project(":FeatherChat"))
 }
 
-tasks {
-    build {
-        dependsOn(shadowJar)
-    }
-    named<ShadowJar>("shadowJar") {
-        relocate("co.aikar", "xyz.mauwh.featherchat.libs.acf")
-        relocate("net.kyori", "xyz.mauwh.featherchat.libs.kyori")
-        relocate("org.yaml.snakeyaml", "xyz.mauwh.featherchat.libs.snakeyaml")
-        archiveBaseName.set("FeatherChat")
-        archiveClassifier.set("")
-    }
+tasks.withType<ShadowJar> {
+    relocate("co.aikar", "xyz.mauwh.featherchat.libs.acf")
+    relocate("net.kyori", "xyz.mauwh.featherchat.libs.kyori")
+    relocate("org.yaml.snakeyaml", "xyz.mauwh.featherchat.libs.snakeyaml")
+    archiveBaseName.set("FeatherChat")
+    archiveClassifier.set("")
+    archiveVersion.set("")
 }

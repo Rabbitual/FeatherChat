@@ -1,7 +1,6 @@
 package xyz.mauwh.featherchat.bukkit.listener;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +8,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerChatPreviewEvent;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
-import xyz.mauwh.featherchat.api.channel.ChannelMessage;
+import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
-import xyz.mauwh.featherchat.api.messenger.ChatMessengerFactory;
+import xyz.mauwh.featherchat.messenger.ChatMessengerFactory;
 
 import java.util.Objects;
 import java.util.UUID;

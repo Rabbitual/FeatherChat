@@ -6,7 +6,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-import xyz.mauwh.featherchat.api.channel.ChannelMessage;
+import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 
@@ -34,7 +34,7 @@ public class ChannelMessageHandler {
     @NotNull
     private TagResolver[] createMessageTags(@NotNull ChannelMessage message) {
         ChatChannel channel = message.getChannel();
-        ChatMessenger<?> sender = message.getSender();
+        ChatMessenger sender = message.getSender();
         return new TagResolver[] {
             Placeholder.component("timestamp", Component.text(formatter.format(LocalDateTime.now()))),
             Placeholder.component("channel_name", channel.getFriendlyName()),

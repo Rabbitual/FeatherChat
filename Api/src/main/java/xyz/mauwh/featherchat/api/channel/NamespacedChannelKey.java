@@ -15,7 +15,7 @@ public final class NamespacedChannelKey {
     private final String namespace;
     private final String key;
 
-    public NamespacedChannelKey(@NotNull ChatMessenger<?> owner, @NotNull String channelName) {
+    public NamespacedChannelKey(@NotNull ChatMessenger owner, @NotNull String channelName) {
         this(owner.getName(), channelName);
     }
 
@@ -33,25 +33,50 @@ public final class NamespacedChannelKey {
         }
     }
 
+    /**
+     * Creates a NamespacedChannelKey in the "featherchat" namespace
+     * @param channelName - The channel name
+     * @return A new NamespacedChannelKey in the "featherchat" namespace
+     */
     @NotNull
     public static NamespacedChannelKey featherchat(@NotNull String channelName) {
         return new NamespacedChannelKey("featherchat", channelName);
     }
 
+    /**
+     * Gets the namespace of this NamespacedChannelKey
+     * @return this NamespacedChannelKey's namespace
+     */
     @NotNull
     public String getNamespace() {
         return namespace;
     }
 
+    /**
+     * Gets the key of this NamespacedChannelKey, typically the channel name
+     * @return this NamespacedChannelKey's key
+     */
     @NotNull
     public String getKey() {
         return key;
     }
 
+    /**
+     * Creates a NamespacedChannelKey from the provided string key.
+     * @param key - The string key to create a NamespacedChannelKey from
+     * @return An optional containing the new NamespacedChannelKey, or empty if the key is invalid
+     */
     @NotNull
     public static Optional<NamespacedChannelKey> fromString(@NotNull String key) {
         String[] parts = key.split(":");
-        return Optional.ofNullable(parts.length == 2 ? new NamespacedChannelKey(parts[0], parts[1]) : null);
+        if (parts.length != 2) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(new NamespacedChannelKey(parts[0], parts[1]));
+        } catch (IllegalArgumentException err) {
+            return Optional.empty();
+        }
     }
 
     @NotNull
