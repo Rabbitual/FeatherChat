@@ -3,15 +3,25 @@
  */
 
 plugins {
-    id("xyz.mauwh.java-conventions")
+    id("com.github.johnrengelman.shadow")
 }
 
 dependencies {
     implementation("net.kyori:adventure-platform-bukkit:4.1.2")
-    implementation("co.aikar:acf-bukkit:0.5.0-SNAPSHOT")
+    implementation("co.aikar:acf-bukkit:0.5.1-SNAPSHOT")
     implementation(project(":FeatherChat"))
     implementation(project(":Api"))
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
+}
+
+tasks.shadowJar {
+    destinationDirectory.set(File("build"))
+    relocate("co.aikar.commands", "xyz.mauwh.featherchat.libs.commands")
+    relocate("co.aikar.locales", "xyz.mauwh.featherchat.libs.locales")
+    relocate("net.kyori.adventure", "xyz.mauwh.featherchat.libs.adventure")
+    relocate("net.kyori.examination", "xyz.mauwh.featherchat.libs.examination")
+//    relocate("org.yaml.snakeyaml", "xyz.mauwh.featherchat.libs.snakeyaml")
+    archiveFileName.set("FeatherChat.jar")
 }
 
 description = "featherchat-bukkit"
