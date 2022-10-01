@@ -23,3 +23,9 @@ subprojects {
         maven("https://repo.aikar.co/content/groups/aikar/")
     }
 }
+
+tasks {
+    clean {
+        this.delete.add(File("jars"))
+    }
+}

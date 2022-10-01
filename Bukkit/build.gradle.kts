@@ -14,14 +14,19 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
 }
 
-tasks.shadowJar {
-    destinationDirectory.set(File("build"))
-    relocate("co.aikar.commands", "xyz.mauwh.featherchat.libs.commands")
-    relocate("co.aikar.locales", "xyz.mauwh.featherchat.libs.locales")
-    relocate("net.kyori.adventure", "xyz.mauwh.featherchat.libs.adventure")
-    relocate("net.kyori.examination", "xyz.mauwh.featherchat.libs.examination")
-//    relocate("org.yaml.snakeyaml", "xyz.mauwh.featherchat.libs.snakeyaml")
-    archiveFileName.set("FeatherChat.jar")
+tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+    shadowJar {
+        destinationDirectory.set(File("..", "jars"))
+        relocate("co.aikar.commands", "xyz.mauwh.featherchat.libs.commands")
+        relocate("co.aikar.locales", "xyz.mauwh.featherchat.libs.locales")
+        relocate("net.kyori.adventure", "xyz.mauwh.featherchat.libs.adventure")
+        relocate("net.kyori.examination", "xyz.mauwh.featherchat.libs.examination")
+        archiveFileName.set("FeatherChat-bukkit.jar")
+    }
 }
+
 
 description = "featherchat-bukkit"
