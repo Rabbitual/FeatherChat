@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.messenger.ChatMessengerFactory;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class BukkitChatMessengerFactory extends ChatMessengerFactory<CommandSender, BukkitChatMessenger, BukkitPlayer> {
@@ -35,14 +34,12 @@ public class BukkitChatMessengerFactory extends ChatMessengerFactory<CommandSend
 
     @Override
     @NotNull
-    public BukkitPlayer player(@NotNull UUID player) {
-        return new BukkitPlayer(plugin, Objects.requireNonNull(Bukkit.getPlayer(player)));
-    }
-
-    @Override
-    @NotNull
-    public BukkitPlayer offlinePlayer(@NotNull UUID player, String name) {
-        return new BukkitPlayer(plugin, player, name);
+    public BukkitPlayer player(@NotNull UUID player) throws IllegalArgumentException {
+        org.bukkit.entity.Player bukkitPlayer = Bukkit.getPlayer(player);
+        if (bukkitPlayer == null) {
+            return new BukkitPlayer(plugin, player);
+        }
+        return new BukkitPlayer(plugin, bukkitPlayer);
     }
 
 }

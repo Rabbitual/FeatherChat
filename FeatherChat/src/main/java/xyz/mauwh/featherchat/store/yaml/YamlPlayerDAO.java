@@ -46,9 +46,7 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> i
     public V read(@NotNull UUID playerUUID) throws DataEntityAccessException {
         File file = ymlFile(playerUUID);
         if (!file.exists()) {
-            V created = messengerFactory.player(playerUUID);
-            create(created);
-            return created;
+            throw new DataEntityAccessException("Player data does not exist");
         }
         Yaml yaml = new Yaml();
         try (InputStream input = new FileInputStream(file)) {
@@ -93,8 +91,12 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> i
     public V deserialize(@NotNull Map<String, Object> values) {
         MiniMessage miniMessage = MiniMessage.miniMessage();
         UUID uuid = UUID.fromString(values.get("uuid").toString());
+        V player = messengerFactory.player(uuid);
+
         String name = values.get("name").toString();
-        V player = messengerFactory.offlinePlayer(uuid, name);
+        if (!player.isOnline()) {
+            ((PlayerAccessible)player).setName(name);
+        }
 
         if (values.containsKey("displayName")) {
             Component displayName = miniMessage.deserialize(values.get("displayName").toString());

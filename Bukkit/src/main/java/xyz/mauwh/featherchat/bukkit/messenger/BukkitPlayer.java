@@ -18,14 +18,15 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     private final UUID uuid;
     private final Set<UUID> channels;
 
-    public BukkitPlayer(@NotNull FeatherChatBukkit plugin, @NotNull UUID uuid, @NotNull String name) {
-        super(plugin, Bukkit.getPlayer(uuid), name);
+    public BukkitPlayer(@NotNull FeatherChatBukkit plugin, @NotNull UUID uuid) {
+        super(plugin, Bukkit.getPlayer(uuid));
         this.uuid = uuid;
         this.channels = new HashSet<>();
     }
 
     public BukkitPlayer(@NotNull FeatherChatBukkit plugin, @NotNull org.bukkit.entity.Player handle) {
         super(plugin, handle);
+        this.name = handle.getName();
         this.uuid = handle.getUniqueId();
         this.channels = new HashSet<>();
     }
@@ -34,6 +35,11 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     @NotNull
     public UUID getUUID() {
         return uuid;
+    }
+
+    @Override
+    public void setName(@NotNull String name) {
+        this.name = name;
     }
 
     @Override

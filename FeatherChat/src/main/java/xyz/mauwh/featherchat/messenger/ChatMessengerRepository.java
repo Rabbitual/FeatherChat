@@ -68,15 +68,19 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
 
     @NotNull
     @SuppressWarnings("unchecked")
-    private V readOrCreate(@NotNull UUID uuid) {
+    private V readOrCreate(@NotNull UUID uuid) throws IllegalArgumentException {
         V player = uuid2player.get(uuid);
         if (player != null) {
             return player;
         }
-        player = messengerFactory.player(uuid);
+
         try {
             player = playerDao.read(uuid);
         } catch (DataEntityAccessException err) {
+            player = messengerFactory.player(uuid);
+            if (!player.isOnline()) {
+                throw new IllegalArgumentException("Unable to create player data for offline player");
+            }
             playerDao.create(player);
         }
 

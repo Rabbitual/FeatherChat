@@ -16,19 +16,14 @@ import java.util.Optional;
 public class BukkitChatMessenger implements ChatMessenger {
 
     protected final FeatherChatBukkit plugin;
-    private final CommandSender handle;
-    private final String name;
+    protected String name;
     private Component displayName;
+    private final CommandSender handle;
 
-    public BukkitChatMessenger(@NotNull FeatherChatBukkit plugin, @NotNull CommandSender handle) {
-        this(plugin, handle, Objects.requireNonNull(handle, "null handle").getName());
-    }
-
-    public BukkitChatMessenger(@NotNull FeatherChatBukkit plugin, @Nullable CommandSender handle, @NotNull String name) {
+    public BukkitChatMessenger(@NotNull FeatherChatBukkit plugin, @Nullable CommandSender handle) {
         Objects.requireNonNull(plugin, "null plugin");
-        Objects.requireNonNull(name, "null name");
         this.plugin = plugin;
-        this.name = name;
+        this.name = handle != null ? handle.getName() : null;
         this.handle = handle;
     }
 

@@ -15,9 +15,6 @@ public abstract class ChatMessengerFactory<T, U extends ChatMessenger, V extends
     public abstract U sender(@NotNull T sender);
 
     @NotNull
-    public abstract V player(@NotNull UUID player);
-
-    @NotNull
-    public abstract V offlinePlayer(@NotNull UUID player, String name);
+    public abstract V player(@NotNull UUID player) throws IllegalArgumentException;
 
 }
