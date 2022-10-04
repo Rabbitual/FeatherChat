@@ -33,13 +33,13 @@ public class ChannelMessageHandler {
     @NotNull
     public Component formatMessage(@NotNull ChannelMessage message) {
         String format = message.getChannel().getMessageFormat();
-        return MiniMessage.miniMessage().deserialize(format, createMessageTags(message));
+        return MiniMessage.miniMessage().deserialize(format, createMessageTags(message, false));
     }
 
     @NotNull
     public String formatPreview(@NotNull ChannelMessage message) {
         String format = message.getChannel().getMessageFormat();
-        Component rawFormat = MiniMessage.miniMessage().deserialize(format, createPreviewTags(message));
+        Component rawFormat = MiniMessage.miniMessage().deserialize(format, createMessageTags(message, true));
         return LegacyComponentSerializer.legacySection().serialize(rawFormat);
     }
 
@@ -63,25 +63,14 @@ public class ChannelMessageHandler {
     }
 
     @NotNull
-    private TagResolver[] createMessageTags(@NotNull ChannelMessage message) {
+    private TagResolver[] createMessageTags(@NotNull ChannelMessage message, boolean preview) {
         ChatChannel channel = message.getChannel();
         ChatMessenger sender = message.getSender();
         return new TagResolver[] {
-            Placeholder.component("timestamp", Component.text(formatter.format(LocalDateTime.now()))),
+            Placeholder.component("timestamp", text(formatter.format(LocalDateTime.now()))),
             Placeholder.component("channel_name", channel.getFriendlyName()),
-            Placeholder.component("sender_name", sender.getFriendlyName()),
-            Placeholder.component("message", message.getMessage())
-        };
-    }
-
-    @NotNull
-    private TagResolver[] createPreviewTags(@NotNull ChannelMessage message) {
-        ChatChannel channel = message.getChannel();
-        return new TagResolver[] {
-                Placeholder.component("timestamp", text(formatter.format(LocalDateTime.now()))),
-                Placeholder.component("channel_name", channel.getFriendlyName()),
-                Placeholder.component("sender_name", text("%1$s")),
-                Placeholder.component("message", text("%2$s"))
+            Placeholder.component("sender_name", preview ? text("%1$s") : sender.getFriendlyName()),
+            Placeholder.component("message", preview ? text("%2$s") : message.getMessage())
         };
     }
 
