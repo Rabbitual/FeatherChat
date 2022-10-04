@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.annotation.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -17,10 +16,6 @@ import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -104,22 +99,10 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @CommandCompletion("@channels")
     @CommandPermission("featherchat.channel.info")
     public void onInfo(@NotNull Player issuer, @NotNull UserChatChannel channel) {
-        Player owner = plugin.getMessengers().getByUUID(channel.getOwner());
-        Set<? extends Player> players = channel.getMembers().stream().map(plugin.getMessengers()::getByUUID).collect(Collectors.toCollection(HashSet::new));
-
-        Component prefix = text("| ", YELLOW, TextDecoration.BOLD);
-        issuer.sendMessage(text("| Channel Info", YELLOW, TextDecoration.BOLD));
-        issuer.sendMessage(text().append(prefix).append(text(" Name: ", YELLOW)).append(text(channel.getName() + " (" + channel.getKey() + ")")).build());
-        channel.getDisplayName().ifPresent(displayName ->
-                issuer.sendMessage(text().append(prefix).append(text(" Display Name: ", YELLOW)).append(displayName).build())
-        );
-        issuer.sendMessage(text().append(prefix).append(text(" Owner: ", YELLOW)).append(owner.getFriendlyName()).build());
-        issuer.sendMessage(text().append(prefix).append(text(" Members:", YELLOW)).build());
-
-        players.remove(owner);
-        TextComponent.Builder builder = text().append(prefix).append(text(" - ", YELLOW)).append(owner.getFriendlyName());
-        players.forEach(player -> builder.append(text(", ", WHITE)).append(player.getFriendlyName()));
-        issuer.sendMessage(builder.build());
+        Component[] info = plugin.getMessageHandler().formatInfo(channel);
+        for (Component message : info) {
+            issuer.sendMessage(message);
+        }
     }
 
     @Subcommand("displayname")

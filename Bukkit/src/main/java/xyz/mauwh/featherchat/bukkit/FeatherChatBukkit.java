@@ -61,7 +61,7 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
         this.invitations = new ChannelInvitationsImpl<>(scheduler);
         this.channels = new ChatChannelRepository(this);
         this.messengers = new ChatMessengerRepository<>(getDataFolder(), messengerFactory);
-        this.messageHandler = new ChannelMessageHandler();
+        this.messageHandler = new ChannelMessageHandler(messengers);
         this.commandManager = new BukkitCommandManager(this);
         setupCommandManager(commandManager);
 
