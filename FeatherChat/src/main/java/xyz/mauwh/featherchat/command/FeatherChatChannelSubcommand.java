@@ -110,11 +110,20 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @CommandAlias("nickname|nick")
     @CommandCompletion("@channels:owner")
     @CommandPermission("featherchat.channel.displayname")
-    public void onDisplayName(@NotNull Player issuer, @NotNull @Flags("owned") UserChatChannel channel, @NotNull @Single @Conditions("channelName|charLimit:max=56") String displayName) {
+    public void onDisplayName(@NotNull Player issuer, @NotNull @Flags("owned") UserChatChannel channel, @NotNull @Conditions("channelName|charLimit:max=56") String displayName) {
         MiniMessage miniColors = MiniMessage.builder().tags(StandardTags.color()).build();
         Component serialized = miniColors.deserialize(displayName);
         channel.setDisplayName(serialized);
         issuer.sendMessage(text("Changed display name of channel to '", RED).append(serialized).append(text("'", RED)));
+    }
+
+    @Subcommand("format")
+    @Conditions("playerOnly")
+    @CommandCompletion("@channels:owner")
+    @CommandPermission("featherchat.channel.format")
+    public void onFormat(@NotNull Player issuer, @NotNull @Flags("owned") UserChatChannel channel, @NotNull String messageFormat) {
+        channel.setMessageFormat(messageFormat);
+        issuer.sendMessage(text("Changed message format for channel ", GREEN).append(channel.getFriendlyName()));
     }
 
     @NotNull
@@ -126,8 +135,9 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     private Component createInviteeAcceptDenyMessage(@NotNull NamespacedChannelKey key) {
         Component accept = clickAndHoverCommand(text("Accept", GREEN, TextDecoration.BOLD), "featherchat channel join " + key);
         Component deny = clickAndHoverCommand(text("Deny", RED, TextDecoration.BOLD), "featherchat channel deny " + key);
-        return text("[", DARK_GRAY).append(accept).append(text("]", DARK_GRAY))
-                .append(text(" ")).append(text("[", DARK_GRAY)).append(deny).append(text("]", DARK_GRAY));
+        Component open = text("[", DARK_GRAY);
+        Component close = text("]", DARK_GRAY);
+        return text().append(open, accept, close, text(" "), open, deny, close).build();
     }
 
     @NotNull
