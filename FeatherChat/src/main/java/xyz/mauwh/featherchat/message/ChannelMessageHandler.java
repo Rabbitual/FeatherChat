@@ -9,8 +9,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.message.ChannelMessage;
-import xyz.mauwh.featherchat.api.channel.ChatChannel;
-import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
 
@@ -22,10 +20,12 @@ import static net.kyori.adventure.text.Component.text;
 
 public class ChannelMessageHandler {
 
+    private final MiniMessage miniMessage;
     private final ChatMessengers<?,?,?> messengers;
     private final DateTimeFormatter formatter;
 
     public ChannelMessageHandler(@NotNull ChatMessengers<?,?,?> messengers) {
+        this.miniMessage = MiniMessage.miniMessage();
         this.messengers = messengers;
         this.formatter = DateTimeFormatter.ofPattern("H:mm", Locale.US);
     }
@@ -33,13 +33,13 @@ public class ChannelMessageHandler {
     @NotNull
     public Component formatMessage(@NotNull ChannelMessage message) {
         String format = message.getChannel().getMessageFormat();
-        return MiniMessage.miniMessage().deserialize(format, createMessageTags(message, false));
+        return miniMessage.deserialize(format, createMessageTags(message, false));
     }
 
     @NotNull
     public String formatPreview(@NotNull ChannelMessage message) {
         String format = message.getChannel().getMessageFormat();
-        Component rawFormat = MiniMessage.miniMessage().deserialize(format, createMessageTags(message, true));
+        Component rawFormat = miniMessage.deserialize(format, createMessageTags(message, true));
         return LegacyComponentSerializer.legacySection().serialize(rawFormat);
     }
 
@@ -53,7 +53,6 @@ public class ChannelMessageHandler {
 
     @NotNull
     public Component[] formatInfo(@NotNull UserChatChannel channel) {
-        MiniMessage miniMessage = MiniMessage.miniMessage();
         TagResolver[] infoTags = createInfoTags(channel);
         Component[] components = new Component[infoMessages.length];
         for (int i = 0; i < infoMessages.length; i++) {
@@ -64,12 +63,12 @@ public class ChannelMessageHandler {
 
     @NotNull
     private TagResolver[] createMessageTags(@NotNull ChannelMessage message, boolean preview) {
-        ChatChannel channel = message.getChannel();
-        ChatMessenger sender = message.getSender();
+        Component channelName = message.getChannel().getFriendlyName();
+        Component senderName = message.getSender().getFriendlyName();
         return new TagResolver[] {
             Placeholder.component("timestamp", text(formatter.format(LocalDateTime.now()))),
-            Placeholder.component("channel_name", channel.getFriendlyName()),
-            Placeholder.component("sender_name", preview ? text("%1$s") : sender.getFriendlyName()),
+            Placeholder.component("channel_name", channelName),
+            Placeholder.component("sender_name", preview ? text("%1$s") : senderName),
             Placeholder.component("message", preview ? text("%2$s") : message.getMessage())
         };
     }
