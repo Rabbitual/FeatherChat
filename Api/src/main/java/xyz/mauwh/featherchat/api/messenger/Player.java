@@ -1,6 +1,7 @@
 package xyz.mauwh.featherchat.api.messenger;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 
 import java.util.Set;
@@ -44,6 +45,12 @@ public interface Player extends ChatMessenger {
      * player a member.
      */
     void validateChannels();
+
+    /**
+     * Kicks this player from the server with the specified kick message
+     * @param message - The kick message to be displayed to the player
+     */
+    void kickPlayer(@Nullable String message);
 
     /**
      * Checks if this player is currently online

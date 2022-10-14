@@ -14,6 +14,7 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,13 +32,13 @@ public final class FeatherChatContextResolvers {
 
     @NotNull
     public ChatMessenger getMessenger(CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
-        return messengers.getBySender(context.getIssuer().getIssuer());
+        return Objects.requireNonNull(messengers.getBySender(context.getIssuer().getIssuer()));
     }
 
     @NotNull
     public Player getPlayer(@NotNull CommandExecutionContext<?, ?> context) throws InvalidCommandArgument {
         if (!context.hasFlag("other")) {
-            return messengers.getByUUID(context.getIssuer().getUniqueId());
+            return Objects.requireNonNull(messengers.getByUUID(context.getIssuer().getUniqueId()));
         }
         Player player = messengers.getByName(context.popFirstArg());
         if (player == null) {
@@ -52,6 +53,7 @@ public final class FeatherChatContextResolvers {
         String[] parts = channelId.split(":");
 
         ChatMessenger messenger = messengers.getBySender(context.getIssuer().getIssuer());
+        Objects.requireNonNull(messenger);
         if (!messenger.isPlayer()) {
             throw new InvalidCommandArgument("Only players may use this command");
         }

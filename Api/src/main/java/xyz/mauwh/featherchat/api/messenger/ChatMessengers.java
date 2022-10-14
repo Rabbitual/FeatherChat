@@ -3,7 +3,9 @@ package xyz.mauwh.featherchat.api.messenger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 public interface ChatMessengers<T> {
     /**
@@ -17,7 +19,7 @@ public interface ChatMessengers<T> {
      * @param sender - The platform implementation to get a chat messenger by
      * @return A {@link ChatMessenger} object representing the provided sender
      */
-    @NotNull ChatMessenger getBySender(@NotNull T sender);
+    @Nullable ChatMessenger getBySender(@NotNull T sender);
 
     /**
      * Gets a chat messenger by its name
@@ -31,12 +33,17 @@ public interface ChatMessengers<T> {
      * @param uuid - The chat messenger UUID
      * @return The chat messenger with the provided UUID, or null if the UUID could not be found
      */
-    @NotNull Player getByUUID(@NotNull UUID uuid);
+    @Nullable Player getByUUID(@NotNull UUID uuid);
+
+    void loadPlayer(@NotNull UUID uuid, @NotNull String name, BiConsumer<Player, Throwable> callback, boolean async);
 
     /**
      * Updates the provided player in persistent storage.
      * @param player - The player to be updated
      */
     void update(@NotNull Player player);
+
     void updateAndRemove(@NotNull Player player);
+
+    @NotNull Collection<Player> getAll();
 }

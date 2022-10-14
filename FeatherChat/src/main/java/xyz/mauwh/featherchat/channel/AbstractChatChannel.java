@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 public abstract class AbstractChatChannel implements ChatChannel {
 
@@ -131,8 +130,11 @@ public abstract class AbstractChatChannel implements ChatChannel {
         Objects.requireNonNull(sender, "null sender");
         ChannelMessage message = new ChannelMessage(this, sender, component);
         Component finalMessage = plugin.getMessageHandler().formatMessage(message);
-        Predicate<Audience> filter = audience -> isMember(plugin.getMessengers().getByUUID(audience.get(Identity.UUID).orElseThrow()));
-        Audience receiving = plugin.getAdventure().players().filterAudience(filter);
+        Audience receiving = plugin.getAdventure().players().filterAudience(audience -> {
+            UUID uuid = audience.get(Identity.UUID).orElseThrow();
+            Player player = plugin.getMessengers().getByUUID(uuid);
+            return player != null && isMember(player);
+        });
         if (consoleLogging) {
             receiving = Audience.audience(receiving, plugin.getAdventure().console());
         }

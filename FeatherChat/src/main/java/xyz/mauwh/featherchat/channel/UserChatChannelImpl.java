@@ -87,11 +87,13 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
 
     public void sendDissolutionMessage() {
         Player owner = plugin.getMessengers().getByUUID(this.owner);
-        Component dissolutionMsg = Component.text(owner.getName() + "has dissolved '", NamedTextColor.RED)
-                .append(getFriendlyName()).append(Component.text("'", NamedTextColor.RED));
-        getMembers().stream().map(plugin.getMessengers()::getByUUID).filter(Player::isOnline).forEach(recipient -> recipient.sendMessage(dissolutionMsg));
-        owner.sendMessage(Component.text("You have dissolved your channel '", NamedTextColor.RED)
-                .append(getFriendlyName()).append(Component.text("'", NamedTextColor.RED)));
+        if (owner != null) {
+            owner.sendMessage(Component.text("Your channel '", NamedTextColor.RED)
+                    .append(getFriendlyName()).append(Component.text("' has been dissolved", NamedTextColor.RED)));
+        }
+        Component dissolutionMsg = Component.text("Channel '", NamedTextColor.RED)
+                .append(getFriendlyName()).append(Component.text("' has been dissolved", NamedTextColor.RED));
+        plugin.getMessengers().getAll().stream().filter(this::isMember).forEach(player -> player.sendMessage(dissolutionMsg));
     }
 
     @Override

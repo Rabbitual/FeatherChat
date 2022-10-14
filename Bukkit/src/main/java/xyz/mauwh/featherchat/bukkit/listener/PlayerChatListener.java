@@ -13,9 +13,9 @@ import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayerImpl;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,6 +56,7 @@ public class PlayerChatListener implements Listener {
 
         String channelId = args[0].substring(1);
         Player player = (Player)plugin.getMessengers().getBySender(event.getPlayer());
+        Objects.requireNonNull(player);
 
         Optional<NamespacedChannelKey> key = NamespacedChannelKey.fromString(channelId);
         UserChatChannel channel = null;

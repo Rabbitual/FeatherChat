@@ -30,7 +30,8 @@ public final class ChatChannelRepository implements ChatChannels {
         this.debugChannel = new AbstractChatChannel(plugin, "debug") {
             @Override
             public boolean isMember(@NotNull UUID member) {
-                return isMember(plugin.getMessengers().getByUUID(member));
+                Player player = plugin.getMessengers().getByUUID(member);
+                return player != null && isMember(player);
             }
             @Override
             public boolean isMember(@NotNull Player member) {
@@ -81,7 +82,6 @@ public final class ChatChannelRepository implements ChatChannels {
         uuid2channel.remove(channel.getUUID());
         key2channel.remove(channel.getKey());
         chatChannelDAO.delete(channel);
-        plugin.getMessengers().getByUUID(channel.getOwner()).removeChannel(channel);
     }
 
     @Nullable
