@@ -7,12 +7,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerChatPreviewEvent;
 import org.jetbrains.annotations.NotNull;
+import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayer;
+import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayerImpl;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -54,7 +55,7 @@ public class PlayerChatListener implements Listener {
         }
 
         String channelId = args[0].substring(1);
-        BukkitPlayer player = (BukkitPlayer)plugin.getMessengers().getBySender(event.getPlayer());
+        Player player = (Player)plugin.getMessengers().getBySender(event.getPlayer());
 
         Optional<NamespacedChannelKey> key = NamespacedChannelKey.fromString(channelId);
         UserChatChannel channel = null;
@@ -94,7 +95,7 @@ public class PlayerChatListener implements Listener {
     }
 
     @NotNull
-    private UserChatChannel resolveByName(@NotNull String channelId, @NotNull BukkitPlayer player) throws IllegalArgumentException {
+    private UserChatChannel resolveByName(@NotNull String channelId, @NotNull Player player) throws IllegalArgumentException {
         Set<UserChatChannel> filtered = channels.filterByName(channelId, channels.filterByParticipant(player));
         if (filtered.isEmpty()) {
             throw new IllegalArgumentException("No channel found with name or ID '" + channelId + "'");

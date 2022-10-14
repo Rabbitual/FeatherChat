@@ -9,40 +9,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
+import xyz.mauwh.featherchat.messenger.AbstractChatMessenger;
 
 import java.util.Objects;
-import java.util.Optional;
 
-public class BukkitChatMessenger implements ChatMessenger {
+public class BukkitNonPlayerMessengerImpl extends AbstractChatMessenger {
 
     protected final FeatherChatBukkit plugin;
-    protected String name;
-    private Component displayName;
     private final CommandSender handle;
 
-    public BukkitChatMessenger(@NotNull FeatherChatBukkit plugin, @Nullable CommandSender handle) {
+    public BukkitNonPlayerMessengerImpl(@NotNull FeatherChatBukkit plugin, @NotNull CommandSender handle) {
+        super(handle.getName());
         Objects.requireNonNull(plugin, "null plugin");
         this.plugin = plugin;
-        this.name = handle != null ? handle.getName() : null;
         this.handle = handle;
-    }
-
-    @Override
-    @NotNull
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    @NotNull
-    public Optional<Component> getDisplayName() {
-        return Optional.ofNullable(displayName);
-    }
-
-    @Override
-    @NotNull
-    public Component getFriendlyName() {
-        return getDisplayName().orElse(Component.text(name));
     }
 
     @Override
@@ -55,11 +35,6 @@ public class BukkitChatMessenger implements ChatMessenger {
     @Override
     public boolean isPlayer() {
         return handle instanceof Player;
-    }
-
-    @Override
-    public void setDisplayName(@Nullable Component displayName) {
-        this.displayName = displayName;
     }
 
     @Override
@@ -99,8 +74,8 @@ public class BukkitChatMessenger implements ChatMessenger {
         if (getClass() != o.getClass()) {
             return false;
         }
-        final BukkitChatMessenger other = (BukkitChatMessenger)o;
-        return name.equals(other.name);
+        final BukkitNonPlayerMessengerImpl other = (BukkitNonPlayerMessengerImpl)o;
+        return getName().equals(other.name);
     }
 
     @Override

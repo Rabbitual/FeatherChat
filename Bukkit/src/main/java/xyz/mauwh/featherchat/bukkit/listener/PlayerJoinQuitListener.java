@@ -7,15 +7,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
-import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessenger;
-import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayer;
+import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.messenger.PlayerAccessible;
 
 public class PlayerJoinQuitListener implements Listener {
 
-    private final ChatMessengers<CommandSender, BukkitChatMessenger, BukkitPlayer> messengers;
+    private final ChatMessengers<CommandSender> messengers;
 
-    public PlayerJoinQuitListener(@NotNull ChatMessengers<CommandSender, BukkitChatMessenger, BukkitPlayer> messengers) {
+    public PlayerJoinQuitListener(@NotNull ChatMessengers<CommandSender> messengers) {
         this.messengers = messengers;
     }
 
@@ -26,7 +25,7 @@ public class PlayerJoinQuitListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        messengers.updateAndRemove((BukkitPlayer)messengers.getBySender(event.getPlayer()));
+        messengers.updateAndRemove((Player)messengers.getBySender(event.getPlayer()));
     }
 
 }

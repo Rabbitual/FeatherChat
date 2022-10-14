@@ -6,15 +6,18 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 
 import java.util.UUID;
 
-public abstract class ChatMessengerFactory<T, U extends ChatMessenger, V extends Player> {
+public abstract class ChatMessengerFactory<T> {
 
     @NotNull
-    public abstract U console();
+    public abstract ChatMessenger console();
 
     @NotNull
-    public abstract U sender(@NotNull T sender);
+    public abstract ChatMessenger sender(@NotNull T sender);
 
     @NotNull
-    public abstract V player(@NotNull UUID player) throws IllegalArgumentException;
+    public abstract Player player(@NotNull UUID player) throws IllegalArgumentException;
+
+    @NotNull
+    public abstract Player player(@NotNull UUID player, @NotNull String name);
 
 }

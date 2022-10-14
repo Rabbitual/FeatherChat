@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface PlayerAccessible extends Player {
-    void setName(@NotNull String name);
     void setDisplayName(@NotNull Component displayName, boolean update);
     void setChannels(@NotNull Set<UUID> channels);
 }

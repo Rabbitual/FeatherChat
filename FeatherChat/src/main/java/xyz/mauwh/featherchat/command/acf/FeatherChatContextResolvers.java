@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public final class FeatherChatContextResolvers {
 
-    private final ChatMessengers<?, ? extends ChatMessenger, ? extends Player> messengers;
+    private final ChatMessengers<?> messengers;
     private final ChatChannels channelRepository;
     private final ChannelInvitations invitations;
 

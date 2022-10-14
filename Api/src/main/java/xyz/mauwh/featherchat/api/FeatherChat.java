@@ -9,7 +9,7 @@ public interface FeatherChat {
     /**
      * @return the chat messenger handler of this FeatherChat instance
      */
-    @NotNull ChatMessengers<?, ?, ?> getMessengers();
+    @NotNull ChatMessengers<?> getMessengers();
 
     /**
      * @return the chat channel repository of this FeatherChat instance

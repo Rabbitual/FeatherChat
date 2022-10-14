@@ -15,16 +15,16 @@ import java.util.*;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
 
-public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends Player> implements ChatMessengers<T, U, V> {
+public final class ChatMessengerRepository<T> implements ChatMessengers<T> {
 
-    private final ChatMessengerFactory<T, U, V> messengerFactory;
-    private final Map<T, U> sender2messenger;
-    private final Map<String, V> name2player;
-    private final Map<UUID, V> uuid2player;
-    private final U console;
-    private final YamlPlayerDAO<T, U, V> playerDao;
+    private final ChatMessengerFactory<T> messengerFactory;
+    private final Map<T, ChatMessenger> sender2messenger;
+    private final Map<String, Player> name2player;
+    private final Map<UUID, Player> uuid2player;
+    private final ChatMessenger console;
+    private final YamlPlayerDAO<T> playerDao;
 
-    public ChatMessengerRepository(@NotNull File dataFolder, @NotNull ChatMessengerFactory<T, U, V> messengerFactory) {
+    public ChatMessengerRepository(@NotNull File dataFolder, @NotNull ChatMessengerFactory<T> messengerFactory) {
         this.messengerFactory = messengerFactory;
         this.sender2messenger = new WeakHashMap<>();
         this.name2player = new HashMap<>();
@@ -36,9 +36,8 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
 
     @Override
     @NotNull
-    @SuppressWarnings("unchecked")
-    public U getBySender(@NotNull T sender) {
-        U messenger = sender2messenger.get(sender); // try get cached messenger by sender
+    public ChatMessenger getBySender(@NotNull T sender) {
+        ChatMessenger messenger = sender2messenger.get(sender); // try get cached messenger by sender
         if (messenger != null) {
             return messenger;
         }
@@ -48,18 +47,18 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
             return messenger;
         }
 
-        UUID uuid = ((V)messenger).getUUID();
-        return (U)readOrCreate(uuid);
+        UUID uuid = ((Player)messenger).getUUID();
+        return readOrCreate(uuid);
     }
 
     @Nullable
-    public V getByName(@NotNull String name) {
+    public Player getByName(@NotNull String name) {
         return name2player.get(name);
     }
 
     @NotNull
-    public V getByUUID(@NotNull UUID uuid) {
-        V player = uuid2player.get(uuid);
+    public Player getByUUID(@NotNull UUID uuid) {
+        Player player = uuid2player.get(uuid);
         if (player != null) {
             return player;
         }
@@ -67,9 +66,8 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
     }
 
     @NotNull
-    @SuppressWarnings("unchecked")
-    private V readOrCreate(@NotNull UUID uuid) throws IllegalArgumentException {
-        V player = uuid2player.get(uuid);
+    private Player readOrCreate(@NotNull UUID uuid) throws IllegalArgumentException {
+        Player player = uuid2player.get(uuid);
         if (player != null) {
             return player;
         }
@@ -84,8 +82,9 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
             playerDao.create(player);
         }
 
-        if (player.getHandle() != null) {
-            sender2messenger.put(player.getHandle(), (U)player);
+        T handle = player.getHandle();
+        if (handle != null) {
+            sender2messenger.put(handle, player);
         }
         name2player.put(player.getName(), player);
         uuid2player.put(uuid, player);
@@ -93,12 +92,12 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
     }
 
     @Override
-    public void update(@NotNull V player) {
+    public void update(@NotNull xyz.mauwh.featherchat.api.messenger.Player player) {
         playerDao.update(player);
     }
 
     @Override
-    public void updateAndRemove(@NotNull V player) {
+    public void updateAndRemove(@NotNull xyz.mauwh.featherchat.api.messenger.Player player) {
         uuid2player.remove(player.getUUID());
         name2player.remove(player.getName());
         if (player.getHandle() != null) {
@@ -110,7 +109,7 @@ public final class ChatMessengerRepository<T, U extends ChatMessenger, V extends
 
     @Override
     @NotNull
-    public U getConsole() {
+    public xyz.mauwh.featherchat.api.messenger.ChatMessenger getConsole() {
         return console;
     }
 

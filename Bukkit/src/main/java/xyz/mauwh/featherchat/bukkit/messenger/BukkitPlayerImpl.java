@@ -1,45 +1,45 @@
 package xyz.mauwh.featherchat.bukkit.messenger;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
+import xyz.mauwh.featherchat.messenger.AbstractChatMessenger;
 import xyz.mauwh.featherchat.messenger.PlayerAccessible;
 
 import java.util.*;
 
-public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAccessible, Player {
+public final class BukkitPlayerImpl extends AbstractChatMessenger implements PlayerAccessible, Player {
 
+    private final FeatherChatBukkit plugin;
     private final UUID uuid;
     private final Set<UUID> channels;
+    private org.bukkit.entity.Player handle;
 
-    public BukkitPlayer(@NotNull FeatherChatBukkit plugin, @NotNull UUID uuid) {
-        super(plugin, Bukkit.getPlayer(uuid));
+    public BukkitPlayerImpl(@NotNull FeatherChatBukkit plugin, @NotNull UUID uuid, @NotNull String name) {
+        super(name);
+        this.plugin = plugin;
         this.uuid = uuid;
         this.channels = new HashSet<>();
     }
 
-    public BukkitPlayer(@NotNull FeatherChatBukkit plugin, @NotNull org.bukkit.entity.Player handle) {
-        super(plugin, handle);
-        this.name = handle.getName();
-        this.uuid = handle.getUniqueId();
-        this.channels = new HashSet<>();
+    public BukkitPlayerImpl(@NotNull FeatherChatBukkit plugin, @NotNull org.bukkit.entity.Player handle) {
+        this(plugin, handle.getUniqueId(), handle.getName());
+        this.handle = handle;
     }
 
     @Override
     @NotNull
     public UUID getUUID() {
         return uuid;
-    }
-
-    @Override
-    public void setName(@NotNull String name) {
-        this.name = name;
     }
 
     @Override
@@ -64,7 +64,7 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     @Nullable
     @SuppressWarnings("unchecked")
     public org.bukkit.entity.Player getHandle() {
-        return Bukkit.getPlayer(uuid);
+        return handle != null ? null : Bukkit.getPlayer(uuid);
     }
 
     @Override
@@ -103,6 +103,24 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     }
 
     @Override
+    public void sendMessage(@Nullable ChatMessenger sender, @NotNull Component message) {
+        if (this.handle == null) {
+            return;
+        }
+        Audience audience = plugin.getAudienceProvider().sender(handle);
+        if (sender == null) {
+            audience.sendMessage(message);
+        } else {
+            audience.sendMessage(sender, message);
+        }
+    }
+
+    @Override
+    public void sendMessage(@NotNull Component message) {
+        sendMessage(null, message);
+    }
+
+    @Override
     public void validateChannels() {
         Map<UUID, UserChatChannel> channels = plugin.getChannels().resolveByUUIDs(this.getChannels());
         Iterator<Map.Entry<UUID, UserChatChannel>> iter = channels.entrySet().iterator();
@@ -122,7 +140,7 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o) && uuid.equals(((BukkitPlayer)o).uuid);
+        return super.equals(o) && uuid.equals(((BukkitPlayerImpl)o).uuid);
     }
 
     @Override
@@ -133,7 +151,13 @@ public final class BukkitPlayer extends BukkitChatMessenger implements PlayerAcc
     @Override
     @NotNull
     public String toString() {
-        return String.format("ChatMessengerPlayerImpl{uuid=%s, channels=%s, %s}", uuid, channels, super.toString());
+        return String.format("BukkitPlayerImpl{uuid=%s, channels=%s, %s}", uuid, channels, super.toString());
+    }
+
+    @Override
+    @NotNull
+    public Identity identity() {
+        return Identity.identity(uuid);
     }
 
 }

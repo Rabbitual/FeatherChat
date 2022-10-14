@@ -16,15 +16,9 @@ public interface ChatMessenger extends Identified {
     /**
      * @return This chat messenger's display name
      */
-    @NotNull Optional<Component> getDisplayName();
+    @NotNull Component getDisplayName();
 
-    /**
-     * Gets the "friendly name" of this chat messenger, which will always be displayed to other chat messengers. As a
-     * display name may not always be set by the user, the "friendly name" is the display name if set, else it will
-     * return {@link #getName()}.
-     * @return The "friendly name" of this chat messenger
-     */
-    @NotNull Component getFriendlyName();
+    boolean hasDisplayName();
 
     /**
      * Sets the display name of this chat messenger

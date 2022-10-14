@@ -55,7 +55,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
         }
         plugin.getInvitations().invite(channel, issuer, invitee);
         Component inviteeMsg = text("You have been invited to ", GREEN).append(channel.getFriendlyName())
-                .append(text(" by ", GREEN)).append(issuer.getFriendlyName());
+                .append(text(" by ", GREEN)).append(issuer.getDisplayName());
         invitee.sendMessage(inviteeMsg);
         invitee.sendMessage(createInviteeAcceptDenyMessage(channel.getKey()));
         issuer.sendMessage(createIssuerInviteMessage(channel, invitee));
@@ -70,7 +70,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
             throw new InvalidCommandArgument("You do not have a pending invite to the specified channel", false);
         }
         if (issuer.addChannel(channel)) {
-            channel.sendMessage(issuer.getFriendlyName().append(text(" has joined the channel", GREEN)));
+            channel.sendMessage(issuer.getDisplayName().append(text(" has joined the channel", GREEN)));
         }
         if (channel.addMember(issuer)) {
             issuer.sendMessage(text("You have joined ", GREEN).append(channel.getFriendlyName()));
@@ -128,7 +128,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
 
     @NotNull
     private Component createIssuerInviteMessage(@NotNull UserChatChannel channel, @NotNull Player invitee) {
-        return invitee.getFriendlyName().append(text(" has been invited to join ", GREEN)).append(channel.getFriendlyName());
+        return invitee.getDisplayName().append(text(" has been invited to join ", GREEN)).append(channel.getFriendlyName());
     }
 
     @NotNull

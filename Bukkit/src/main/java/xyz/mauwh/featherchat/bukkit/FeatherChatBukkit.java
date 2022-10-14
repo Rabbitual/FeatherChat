@@ -27,9 +27,9 @@ import xyz.mauwh.featherchat.command.acf.FeatherChatCommandCompletionHandler;
 import xyz.mauwh.featherchat.command.acf.FeatherChatCommandConditions;
 import xyz.mauwh.featherchat.command.acf.FeatherChatContextResolvers;
 import xyz.mauwh.featherchat.message.ChannelMessageHandler;
-import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessenger;
+import xyz.mauwh.featherchat.bukkit.messenger.BukkitNonPlayerMessengerImpl;
 import xyz.mauwh.featherchat.bukkit.messenger.BukkitChatMessengerFactory;
-import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayer;
+import xyz.mauwh.featherchat.bukkit.messenger.BukkitPlayerImpl;
 import xyz.mauwh.featherchat.messenger.ChatMessengerRepository;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 import xyz.mauwh.featherchat.scheduler.FeatherChatScheduler;
@@ -42,7 +42,7 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
     private ChannelMessageHandler messageHandler;
     private ChatChannels channels;
     private ChannelInvitations invitations;
-    private ChatMessengers<CommandSender, BukkitChatMessenger, BukkitPlayer> messengers;
+    private ChatMessengers<CommandSender> messengers;
     private BukkitAudiences adventure;
     private BukkitCommandManager commandManager;
 
@@ -139,7 +139,7 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
 
     @Override
     @NotNull
-    public ChatMessengers<CommandSender, BukkitChatMessenger, BukkitPlayer> getMessengers() {
+    public ChatMessengers<CommandSender> getMessengers() {
         return messengers;
     }
 

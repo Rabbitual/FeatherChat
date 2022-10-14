@@ -11,7 +11,7 @@ public final class FeatherChatCommandConditions {
 
     private final Pattern channelNamePattern;
 
-    public FeatherChatCommandConditions(@NotNull ChatMessengers<?, ?, ?> messengers, @NotNull ChannelInvitations invitations) {
+    public FeatherChatCommandConditions(@NotNull ChatMessengers<?> messengers, @NotNull ChannelInvitations invitations) {
         this.channelNamePattern = Pattern.compile("[0-9A-Za-z-_ ]+");
     }
 

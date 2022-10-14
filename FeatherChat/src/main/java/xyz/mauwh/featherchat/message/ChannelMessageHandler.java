@@ -21,10 +21,10 @@ import static net.kyori.adventure.text.Component.text;
 public class ChannelMessageHandler {
 
     private final MiniMessage miniMessage;
-    private final ChatMessengers<?,?,?> messengers;
+    private final ChatMessengers<?> messengers;
     private final DateTimeFormatter formatter;
 
-    public ChannelMessageHandler(@NotNull ChatMessengers<?,?,?> messengers) {
+    public ChannelMessageHandler(@NotNull ChatMessengers<?> messengers) {
         this.miniMessage = MiniMessage.miniMessage();
         this.messengers = messengers;
         this.formatter = DateTimeFormatter.ofPattern("H:mm", Locale.US);
@@ -64,11 +64,10 @@ public class ChannelMessageHandler {
     @NotNull
     private TagResolver[] createMessageTags(@NotNull ChannelMessage message, boolean preview) {
         Component channelName = message.getChannel().getFriendlyName();
-        Component senderName = message.getSender().getFriendlyName();
         return new TagResolver[] {
             Placeholder.component("timestamp", text(formatter.format(LocalDateTime.now()))),
             Placeholder.component("channel_name", channelName),
-            Placeholder.component("sender_name", preview ? text("%1$s") : senderName),
+            Placeholder.component("sender_name", preview ? text("%1$s") : message.getSender().getDisplayName()),
             Placeholder.component("message", preview ? text("%2$s") : message.getMessage())
         };
     }
@@ -84,7 +83,7 @@ public class ChannelMessageHandler {
         Iterator<UUID> iter = uuids.iterator();
         while (iter.hasNext()) {
             Player member = messengers.getByUUID(iter.next());
-            members.append(member.getFriendlyName());
+            members.append(member.getDisplayName());
             if (iter.hasNext()) {
                 members.append(text(", "));
             }
@@ -93,7 +92,7 @@ public class ChannelMessageHandler {
         return new TagResolver[] {
                 Placeholder.component("channel_uuid", text(channel.getUUID().toString())),
                 Placeholder.component("channel_name", displayName),
-                Placeholder.component("channel_owner", messengers.getByUUID(channel.getOwner()).getFriendlyName()),
+                Placeholder.component("channel_owner", messengers.getByUUID(channel.getOwner()).getDisplayName()),
                 Placeholder.component("channel_members", members.build()),
         };
     }

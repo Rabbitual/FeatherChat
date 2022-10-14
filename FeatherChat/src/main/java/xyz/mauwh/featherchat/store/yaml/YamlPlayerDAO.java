@@ -5,8 +5,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
-import xyz.mauwh.featherchat.messenger.ChatMessengerFactory;
 import xyz.mauwh.featherchat.api.messenger.Player;
+import xyz.mauwh.featherchat.messenger.ChatMessengerFactory;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
 import xyz.mauwh.featherchat.messenger.PlayerAccessible;
 import xyz.mauwh.featherchat.store.DataAccessObject;
@@ -15,19 +15,19 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
-public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> implements DataAccessObject<V, UUID> {
+public final class YamlPlayerDAO<T> implements DataAccessObject<Player, UUID> {
 
     private static final Logger logger = Logger.getLogger("FeatherChatData");
-    private final ChatMessengerFactory<T, U, V> messengerFactory;
+    private final ChatMessengerFactory<T> messengerFactory;
     private final File playersDir;
 
-    public YamlPlayerDAO(@NotNull File dataFolder, @NotNull ChatMessengerFactory<T, U, V> messengerFactory) {
+    public YamlPlayerDAO(@NotNull File dataFolder, @NotNull ChatMessengerFactory<T> messengerFactory) {
         this.messengerFactory = messengerFactory;
         this.playersDir = new File(dataFolder, "players");
     }
 
     @Override
-    public void create(@NotNull V player) throws DataEntityAccessException {
+    public void create(@NotNull Player player) throws DataEntityAccessException {
         if (!player.isPlayer()) {
             throw new DataEntityAccessException("Unable to save data of non-player messenger");
         }
@@ -43,7 +43,7 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> i
     }
 
     @Override
-    public V read(@NotNull UUID playerUUID) throws DataEntityAccessException {
+    public Player read(@NotNull UUID playerUUID) throws DataEntityAccessException {
         File file = ymlFile(playerUUID);
         if (!file.exists()) {
             throw new DataEntityAccessException("Player data does not exist");
@@ -57,7 +57,7 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> i
     }
 
     @Override
-    public void update(@NotNull V player) throws DataEntityAccessException {
+    public void update(@NotNull Player player) throws DataEntityAccessException {
         File file = new File(playersDir, player.getUUID() + ".yml");
         if (!file.exists()) {
             logger.warning("Attempted to update non-existent player data file ('" + player.getUUID() + ".yml')");
@@ -72,32 +72,30 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> i
     }
 
     @Override
-    public void delete(@NotNull V player) {
+    public void delete(@NotNull Player player) {
         ymlFile(player).delete();
     }
 
     @NotNull
-    public Map<String, Object> serialize(@NotNull V player) {
+    public Map<String, Object> serialize(@NotNull Player player) {
         Map<String, Object> values = new HashMap<>();
         MiniMessage miniMessage = MiniMessage.miniMessage();
         values.put("uuid", player.getUUID().toString());
         values.put("name", player.getName());
         values.put("channels", player.getChannels().stream().map(UUID::toString).toList());
-        player.getDisplayName().ifPresent(displayName -> values.put("displayName", miniMessage.serialize(displayName)));
+        if (player.hasDisplayName()) {
+            values.put("displayName", miniMessage.serialize(player.getDisplayName()));
+        }
         return values;
     }
 
     @NotNull
-    public V deserialize(@NotNull Map<String, Object> values) {
+    public Player deserialize(@NotNull Map<String, Object> values) {
         MiniMessage miniMessage = MiniMessage.miniMessage();
         UUID uuid = UUID.fromString(values.get("uuid").toString());
-        V player = messengerFactory.player(uuid);
-
         String name = values.get("name").toString();
-        if (!player.isOnline()) {
-            ((PlayerAccessible)player).setName(name);
-        }
 
+        Player player = messengerFactory.player(uuid, name);
         if (values.containsKey("displayName")) {
             Component displayName = miniMessage.deserialize(values.get("displayName").toString());
             ((PlayerAccessible)player).setDisplayName(displayName, false);
@@ -118,7 +116,7 @@ public final class YamlPlayerDAO<T, U extends ChatMessenger, V extends Player> i
     }
 
     @NotNull
-    private File ymlFile(@NotNull V player) {
+    private File ymlFile(@NotNull Player player) {
         if (!player.isPlayer()) {
             throw new IllegalArgumentException("Cannot create yml file for non-player messenger");
         }
