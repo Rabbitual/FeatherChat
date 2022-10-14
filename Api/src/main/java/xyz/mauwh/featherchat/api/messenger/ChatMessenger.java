@@ -5,8 +5,6 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public interface ChatMessenger extends Identified {
     /**
      * @return This chat messenger's name

@@ -8,10 +8,7 @@ import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public final class FeatherChatCommandCompletionHandler {
 
@@ -26,7 +23,10 @@ public final class FeatherChatCommandCompletionHandler {
 
     @NotNull
     public Collection<String> getChannelMatches(@NotNull CommandCompletionContext<?> context) throws InvalidCommandArgument {
-        Player player = plugin.getMessengers().getByUUID(context.getIssuer().getUniqueId());
+        Player player = (Player)plugin.getMessengers().getBySender(context.getIssuer().getIssuer());
+        if (player == null) {
+            return Collections.emptyList();
+        }
         Set<UserChatChannel> filtered = context.hasConfig("owner") ? channels.filterByOwner(player) : channels.filterByParticipant(player);
         Set<String> matches = new HashSet<>();
         filtered.forEach(channel -> {

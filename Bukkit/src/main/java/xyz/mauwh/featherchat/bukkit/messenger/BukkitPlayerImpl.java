@@ -134,6 +134,14 @@ public final class BukkitPlayerImpl extends AbstractChatMessenger implements Pla
     }
 
     @Override
+    public void kickPlayer(@Nullable String message) {
+        getHandle();
+        if (handle != null) {
+            handle.kickPlayer(message);
+        }
+    }
+
+    @Override
     public boolean isOnline() {
         return getHandle() != null;
     }

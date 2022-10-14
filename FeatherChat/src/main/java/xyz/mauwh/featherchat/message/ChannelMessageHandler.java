@@ -2,6 +2,7 @@ package xyz.mauwh.featherchat.message;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -83,16 +84,17 @@ public class ChannelMessageHandler {
         Iterator<UUID> iter = uuids.iterator();
         while (iter.hasNext()) {
             Player member = messengers.getByUUID(iter.next());
-            members.append(member.getDisplayName());
+            members.append(member == null ? text("null") : member.getDisplayName());
             if (iter.hasNext()) {
                 members.append(text(", "));
             }
         }
-
+        Player owner = messengers.getByUUID(channel.getOwner());
+        Component ownerDisplayName = owner == null ? text("null", NamedTextColor.RED) : owner.getDisplayName();
         return new TagResolver[] {
                 Placeholder.component("channel_uuid", text(channel.getUUID().toString())),
                 Placeholder.component("channel_name", displayName),
-                Placeholder.component("channel_owner", messengers.getByUUID(channel.getOwner()).getDisplayName()),
+                Placeholder.component("channel_owner", ownerDisplayName),
                 Placeholder.component("channel_members", members.build()),
         };
     }
