@@ -41,10 +41,7 @@ public final class MySQLDatabase {
 
     public void createTables() throws SQLException {
         Connection connection = getValidConnection();
-        boolean wasAutoCommit = connection.getAutoCommit();
-        if (wasAutoCommit) {
-            connection.setAutoCommit(false);
-        }
+        connection.setAutoCommit(false);
 
         try (PreparedStatement createPlayers = connection.prepareStatement("""
                 CREATE TABLE IF NOT EXISTS players(
@@ -64,10 +61,17 @@ public final class MySQLDatabase {
             createChannels.executeUpdate();
         }
 
-        connection.commit();
-        if (wasAutoCommit) {
-            connection.setAutoCommit(true);
+        try (PreparedStatement createChannelMembers = connection.prepareStatement("""
+                CREATE TABLE IF NOT EXISTS channel_members(
+                    channel_uuid VARCHAR(32),
+                    player_uuid VARCHAR(32),
+                    PRIMARY KEY(channel_uuid, player_uuid)
+                )""")) {
+            createChannelMembers.executeUpdate();
         }
+
+        connection.commit();
+        connection.setAutoCommit(true);
     }
 
 }
