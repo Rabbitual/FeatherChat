@@ -2,17 +2,20 @@ package xyz.mauwh.featherchat.bukkit.listener;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerChatPreviewEvent;
 import org.jetbrains.annotations.NotNull;
+import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
-import xyz.mauwh.featherchat.bukkit.FeatherChatBukkit;
+
 import xyz.mauwh.featherchat.api.message.ChannelMessage;
 import xyz.mauwh.featherchat.api.channel.ChatChannels;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
+import xyz.mauwh.featherchat.message.ChannelMessageHandler;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -21,12 +24,16 @@ import java.util.Set;
 
 public class PlayerChatListener implements Listener {
 
-    private final FeatherChatBukkit plugin;
+    private final ChatMessengers<CommandSender> messengers;
     private final ChatChannels channels;
+    private final ChannelMessageHandler messageHandler;
 
-    public PlayerChatListener(@NotNull FeatherChatBukkit plugin) {
-        this.plugin = plugin;
-        this.channels = plugin.getChannels();
+    public PlayerChatListener(@NotNull ChatMessengers<CommandSender> messengers,
+                              @NotNull ChatChannels channels,
+                              @NotNull ChannelMessageHandler messageHandler) {
+        this.messengers = messengers;
+        this.channels = channels;
+        this.messageHandler = messageHandler;
     }
 
     @EventHandler
@@ -55,7 +62,7 @@ public class PlayerChatListener implements Listener {
         }
 
         String channelId = args[0].substring(1);
-        Player player = (Player)plugin.getMessengers().getBySender(event.getPlayer());
+        Player player = (Player)messengers.getBySender(event.getPlayer());
         Objects.requireNonNull(player);
 
         Optional<NamespacedChannelKey> key = NamespacedChannelKey.fromString(channelId);
@@ -76,7 +83,7 @@ public class PlayerChatListener implements Listener {
         String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
         if (event instanceof AsyncPlayerChatPreviewEvent) {
             ChannelMessage channelMessage = new ChannelMessage(channel, player, Component.text(message));
-            String format = plugin.getMessageHandler().formatPreview(channelMessage);
+            String format = messageHandler.formatPreview(channelMessage);
             event.setMessage(message);
             event.setFormat(format);
             return;

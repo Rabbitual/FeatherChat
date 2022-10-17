@@ -8,15 +8,12 @@ import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
-import xyz.mauwh.featherchat.scheduler.FeatherChatScheduler;
 import xyz.mauwh.featherchat.store.yaml.YamlPlayerDAO;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.*;
@@ -28,11 +25,9 @@ public final class ChatMessengerRepository<T> implements ChatMessengers<T> {
     private final Map<String, Player> name2player;
     private final Map<UUID, Player> uuid2player;
     private final ChatMessenger console;
-    private final YamlPlayerDAO<T> playerDao;
-    private final FeatherChatScheduler<?> scheduler;
+    private final YamlPlayerDAO playerDao;
 
     public ChatMessengerRepository(@NotNull FeatherChatPlugin plugin,
-                                   @NotNull FeatherChatScheduler<?> scheduler,
                                    @NotNull ChatMessengerFactory<T> messengerFactory) {
         this.messengerFactory = messengerFactory;
         this.sender2messenger = new WeakHashMap<>();
@@ -40,8 +35,7 @@ public final class ChatMessengerRepository<T> implements ChatMessengers<T> {
         this.uuid2player = new HashMap<>();
         this.console = messengerFactory.console();
         this.console.setDisplayName(text("Feather", AQUA, TextDecoration.BOLD).append(text("Chat", GOLD, TextDecoration.BOLD)));
-        this.playerDao = new YamlPlayerDAO<>(plugin.getDataFolder(), messengerFactory);
-        this.scheduler = plugin.getScheduler();
+        this.playerDao = new YamlPlayerDAO(plugin.getDataFolder(), messengerFactory);
     }
 
     @Override
@@ -68,55 +62,51 @@ public final class ChatMessengerRepository<T> implements ChatMessengers<T> {
     }
 
     @Override
-    public void loadPlayer(@NotNull UUID uuid, @Nullable String name, @Nullable BiConsumer<Player, Throwable> callback, boolean async) {
+    public void loadPlayer(@NotNull UUID uuid, @Nullable String name, @NotNull Consumer<Throwable> exHandler, @Nullable Consumer<Player> callback, boolean async) {
         Player cached = uuid2player.get(uuid);
         if (cached != null) {
             if (callback != null) {
-                callback.accept(cached, null);
+                callback.accept(cached);
             }
             return;
         }
 
-        Supplier<Player> read = () -> playerDao.read(uuid);
-        Function<Throwable, Player> exceptionHandler = err -> {
+        Function<Throwable, Player> createPlayer = err -> {
             Player player = name == null ? messengerFactory.player(uuid) : messengerFactory.player(uuid, name);
             playerDao.create(player);
             return player;
         };
-        Consumer<Player> cachePlayer = player -> {
-            sender2messenger.put(player.getHandle(), player);
-            name2player.put(player.getName(), player);
-            uuid2player.put(uuid, player);
-        };
 
         if (!async) {
-            Player player = null;
-            Throwable ex = null;
+            Player player;
             try {
-                player = read.get();
+                player = playerDao.read(uuid);
             } catch (DataEntityAccessException err) {
                 try {
-                    player = exceptionHandler.apply(err);
+                    player = createPlayer.apply(err);
                 } catch (DataEntityAccessException err1) {
-                    ex = err1;
+                    exHandler.accept(err1);
+                    return;
                 }
             }
-            if (callback != null) {
-                callback.accept(player, ex);
-            }
             Player loaded = player;
-            scheduler.executeTaskLater(() -> cachePlayer.accept(loaded), 5L);
+            if (callback != null) {
+                callback.accept(loaded);
+            }
+            cachePlayer(loaded);
             return;
         }
 
-        CompletableFuture.supplyAsync(read)
-                .exceptionallyAsync(exceptionHandler)
+        CompletableFuture.supplyAsync(() -> playerDao.read(uuid))
+                .exceptionallyAsync(createPlayer)
                 .whenComplete((loaded, err) -> {
-                    if (callback != null) {
-                        callback.accept(loaded, null);
-                    }
-                    if (loaded != null) {
-                        cachePlayer.accept(loaded);
+                    if (err != null) {
+                        exHandler.accept(err);
+                    } else if (loaded != null) {
+                        if (callback != null) {
+                            callback.accept(loaded);
+                        }
+                        cachePlayer(loaded);
                     }
                 });
     }
@@ -124,6 +114,16 @@ public final class ChatMessengerRepository<T> implements ChatMessengers<T> {
     @Override
     public void update(@NotNull xyz.mauwh.featherchat.api.messenger.Player player) {
         playerDao.update(player);
+    }
+
+    @Override
+    public void cachePlayer(@NotNull Player player) {
+        T handle = player.getHandle();
+        if (player.getHandle() != null) {
+            sender2messenger.put(handle, player);
+        }
+        name2player.put(player.getName(), player);
+        uuid2player.put(player.getUUID(), player);
     }
 
     @Override

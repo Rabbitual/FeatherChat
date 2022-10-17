@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.UUID;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public interface ChatMessengers<T> {
     /**
@@ -35,13 +35,15 @@ public interface ChatMessengers<T> {
      */
     @Nullable Player getByUUID(@NotNull UUID uuid);
 
-    void loadPlayer(@NotNull UUID uuid, @Nullable String name, BiConsumer<Player, Throwable> callback, boolean async);
+    void loadPlayer(@NotNull UUID uuid, @Nullable String name, @NotNull Consumer<Throwable> exHandler, @Nullable Consumer<Player> callback, boolean async);
 
     /**
      * Updates the provided player in persistent storage.
      * @param player - The player to be updated
      */
     void update(@NotNull Player player);
+
+    void cachePlayer(@NotNull Player player);
 
     void updateAndRemove(@NotNull Player player);
 

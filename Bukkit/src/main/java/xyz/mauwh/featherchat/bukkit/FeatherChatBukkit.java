@@ -38,10 +38,8 @@ import java.util.Objects;
 public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPlugin {
 
     private static FeatherChatBukkit instance;
-    private FeatherChatScheduler<FeatherChatBukkitTask> scheduler;
     private ChannelMessageHandler messageHandler;
     private ChatChannels channels;
-    private ChatMessengerFactory<CommandSender> messengerFactory;
     private ChatMessengers<CommandSender> messengers;
     private ChannelInvitations invitations;
     private BukkitAudiences adventure;
@@ -56,29 +54,29 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
     public void enable() {
         instance = this;
         this.adventure = BukkitAudiences.create(this);
-
-        this.scheduler = new FeatherChatBukkitScheduler(this);
         this.messageHandler = new ChannelMessageHandler(messengers);
         this.channels = new ChatChannelRepository(this);
-        this.messengerFactory = new BukkitChatMessengerFactory(this);
-        this.messengers = new ChatMessengerRepository<>(this, scheduler, messengerFactory);
+
+        ChatMessengerFactory<CommandSender> messengerFactory = new BukkitChatMessengerFactory(this);
+        this.messengers = new ChatMessengerRepository<>(this, messengerFactory);
+
+        FeatherChatScheduler<FeatherChatBukkitTask> scheduler = new FeatherChatBukkitScheduler(this);
         this.invitations = new ChannelInvitationsImpl<>(scheduler);
+
         this.commandManager = new BukkitCommandManager(this);
         setupCommandManager(commandManager);
 
-
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerJoinQuitListener(messengers), this);
-        pm.registerEvents(new PlayerChatListener(this), this);
+        pm.registerEvents(new PlayerChatListener(messengers, channels, messageHandler), this);
 
-        Bukkit.getOnlinePlayers().forEach(player ->
-                messengers.loadPlayer(player.getUniqueId(), player.getName(), (loaded, err) -> {
-                    if (err != null) {
-                        player.kickPlayer("Unable to load player data");
-                        return;
-                    }
-                    loaded.validateChannels();
-                }, true));
+        Bukkit.getOnlinePlayers().forEach(this::reloadPlayer);
+    }
+
+    private void reloadPlayer(@NotNull org.bukkit.entity.Player player) {
+        messengers.loadPlayer(player.getUniqueId(), player.getName(),
+                (err) -> player.kickPlayer("Unable to load player data"),
+                Player::validateChannels, true);
     }
 
     @Override
@@ -147,20 +145,8 @@ public final class FeatherChatBukkit extends JavaPlugin implements FeatherChatPl
 
     @Override
     @NotNull
-    public ChatMessengerFactory<CommandSender> getMessengerFactory() {
-        return messengerFactory;
-    }
-
-    @Override
-    @NotNull
     public ChatMessengers<CommandSender> getMessengers() {
         return messengers;
-    }
-
-    @Override
-    @NotNull
-    public FeatherChatScheduler<FeatherChatBukkitTask> getScheduler() {
-        return scheduler;
     }
 
     @Override

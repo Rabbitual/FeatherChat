@@ -4,12 +4,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.messenger.ChatMessengers;
 import xyz.mauwh.featherchat.api.messenger.Player;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class PlayerJoinQuitListener implements Listener {
 
@@ -20,19 +22,29 @@ public class PlayerJoinQuitListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(@NotNull AsyncPlayerPreLoginEvent event) {
+    public void onPlayerPreLogin(@NotNull AsyncPlayerPreLoginEvent event) {
         Player player = messengers.getByUUID(event.getUniqueId());
         if (player != null) {
             player.validateChannels();
             return;
         }
 
-        messengers.loadPlayer(event.getUniqueId(), event.getName(), (loaded, err) -> {
-            if (err != null) {
-                event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Unable to load player data - please check the console");
-            }
-            loaded.validateChannels();
-        }, false);
+        messengers.loadPlayer(event.getUniqueId(), event.getName(), err -> {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Unable to load player data - please check the console");
+        }, Player::validateChannels, false);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+        org.bukkit.entity.Player bukkitPlayer = event.getPlayer();
+        UUID playerUUID = bukkitPlayer.getUniqueId();
+
+        Player player = messengers.getByUUID(playerUUID);
+        if (player == null) {
+            bukkitPlayer.kickPlayer("Unable to load player data");
+            return;
+        }
+        messengers.cachePlayer(player); // double-tap caching for completed platform implementation
     }
 
     @EventHandler
