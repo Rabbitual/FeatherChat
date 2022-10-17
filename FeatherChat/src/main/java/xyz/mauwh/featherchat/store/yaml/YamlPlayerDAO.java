@@ -8,34 +8,34 @@ import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.messenger.ChatMessengerFactory;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
 import xyz.mauwh.featherchat.messenger.PlayerAccessible;
-import xyz.mauwh.featherchat.store.DataAccessObject;
+import xyz.mauwh.featherchat.store.PlayerDAO;
+import xyz.mauwh.featherchat.store.yaml.serializer.GenericYamlSerializer;
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
-public final class YamlPlayerDAO<T> implements DataAccessObject<Player, UUID> {
+public final class YamlPlayerDAO implements PlayerDAO {
 
-    private static final Logger logger = Logger.getLogger("FeatherChatData");
-    private final ChatMessengerFactory<T> messengerFactory;
+    private static final Logger logger = Logger.getLogger("FeatherChat");
+    private final ChatMessengerFactory<?> messengerFactory;
     private final File playersDir;
 
-    public YamlPlayerDAO(@NotNull File dataFolder, @NotNull ChatMessengerFactory<T> messengerFactory) {
+    public YamlPlayerDAO(@NotNull File dataFolder, @NotNull ChatMessengerFactory<?> messengerFactory) {
         this.messengerFactory = messengerFactory;
         this.playersDir = new File(dataFolder, "players");
     }
 
     @Override
     public void create(@NotNull Player player) throws DataEntityAccessException {
-        if (!player.isPlayer()) {
-            throw new DataEntityAccessException("Unable to save data of non-player messenger");
-        }
         playersDir.mkdirs();
-        File file = ymlFile(player);
+        File file = ymlFile(player.getUUID());
         try {
             if (file.createNewFile()) {
                 this.update(player);
+                return;
             }
+            logger.warning("Attempted to create player data where player data already exists");
         } catch (IOException err) {
             throw new DataEntityAccessException("An error occurred while attempting to save player data", err);
         }
@@ -90,36 +90,24 @@ public final class YamlPlayerDAO<T> implements DataAccessObject<Player, UUID> {
 
     @NotNull
     public Player deserialize(@NotNull Map<String, Object> values) {
-        MiniMessage miniMessage = MiniMessage.miniMessage();
-        UUID uuid = UUID.fromString(values.get("uuid").toString());
-        String name = values.get("name").toString();
+        GenericYamlSerializer serializer = new GenericYamlSerializer();
+        UUID uuid = serializer.deserializeUUID(values, "uuid");
+        String name = (String)values.get("name");
 
         Player player = messengerFactory.player(uuid, name);
-        if (values.containsKey("displayName")) {
-            Component displayName = miniMessage.deserialize(values.get("displayName").toString());
-            ((PlayerAccessible)player).setDisplayName(displayName, false);
+        Component displayName = serializer.deserializeComponent(values, "display-name", GenericYamlSerializer.COLORED);
+        if (displayName != null) {
+            player.setDisplayName(displayName);
         }
 
-        Set<UUID> channelUUIDs = new HashSet<>();
-        List<?> strUUIDs = (List<?>)values.get("channels");
-        strUUIDs.forEach(obj -> {
-            try {
-                channelUUIDs.add(UUID.fromString(obj.toString()));
-            } catch (IllegalArgumentException err) {
-                logger.warning("Encountered a malformed channel UUID while reading player data file (file: '" + uuid + ".yml', channel UUID: '" + obj + "')");
-            }
-        });
-
+        List<UUID> channelUUIDs = serializer.deserializeUUIDList(values, "channels");
         ((PlayerAccessible)player).setChannels(channelUUIDs);
         return player;
     }
 
     @NotNull
     private File ymlFile(@NotNull Player player) {
-        if (!player.isPlayer()) {
-            throw new IllegalArgumentException("Cannot create yml file for non-player messenger");
-        }
-        return new File(playersDir, (player).getUUID() + ".yml");
+        return ymlFile(player.getUUID());
     }
 
     @NotNull

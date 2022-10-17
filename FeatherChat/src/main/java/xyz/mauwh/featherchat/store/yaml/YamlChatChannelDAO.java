@@ -1,23 +1,21 @@
 package xyz.mauwh.featherchat.store.yaml;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.Yaml;
 import xyz.mauwh.featherchat.api.channel.ChatChannel;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
-import xyz.mauwh.featherchat.channel.AbstractChatChannel;
 import xyz.mauwh.featherchat.channel.UserChatChannelImpl;
 import xyz.mauwh.featherchat.exception.DataEntityAccessException;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
-import xyz.mauwh.featherchat.store.DataAccessObject;
+import xyz.mauwh.featherchat.store.ChatChannelDAO;
+import xyz.mauwh.featherchat.store.yaml.serializer.GenericYamlSerializer;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public final class YamlChatChannelDAO implements DataAccessObject<UserChatChannel, UUID> {
+public final class YamlChatChannelDAO implements ChatChannelDAO {
 
     private final FeatherChatPlugin plugin;
     private final File channelsDir;
@@ -29,9 +27,6 @@ public final class YamlChatChannelDAO implements DataAccessObject<UserChatChanne
 
     @Override
     public void create(@NotNull UserChatChannel channel) throws DataEntityAccessException {
-        if (!(channel instanceof UserChatChannelImpl)) {
-            throw new IllegalArgumentException("Channel must be of type BasicChatChannel");
-        }
         channelsDir.mkdirs();
         File file = ymlFile(channel);
         try {
@@ -72,50 +67,40 @@ public final class YamlChatChannelDAO implements DataAccessObject<UserChatChanne
 
     @Override
     public void delete(@NotNull UserChatChannel channel) {
-        ymlFile(channel).delete();
+        if (!ymlFile(channel).delete()) {
+            plugin.getLogger().warning("Attempted to delete chat channel which does not exist");
+        }
     }
 
     @NotNull
     public static Map<String, Object> serialize(@NotNull UserChatChannel channel) {
         Map<String, Object> values = new HashMap<>();
-        MiniMessage miniMessage = MiniMessage.miniMessage();
         values.put("key", channel.getKey().toString());
         values.put("uuid", channel.getUUID().toString());
         values.put("name", channel.getName());
-        channel.getDisplayName().ifPresent(displayName -> values.put("displayName", miniMessage.serialize(displayName)));
+
+        channel.getDisplayName().ifPresent(displayName -> values.put("display-name", GenericYamlSerializer.COLORED.serialize(displayName)));
         values.put("owner", channel.getOwner().toString());
         values.put("members", channel.getMembers().stream().map(String::valueOf).toList());
-        values.put("messageFormat", channel.getMessageFormat());
+        values.put("message-format", channel.getMessageFormat());
         return values;
     }
 
     @NotNull
     public static UserChatChannel deserialize(@NotNull FeatherChatPlugin plugin, @NotNull Map<String, Object> values) throws IllegalArgumentException {
-        MiniMessage miniMessage = MiniMessage.miniMessage();
+        GenericYamlSerializer serializer = new GenericYamlSerializer();
+        serializer.checkRequiredChannelValuesNonNull(values);
 
-        String[] parts = ((String)values.get("key")).split(":");
-        NamespacedChannelKey key = new NamespacedChannelKey(parts[0], parts[1]);
-
-        UUID uuid = UUID.fromString((String)values.get("uuid"));
+        NamespacedChannelKey key = serializer.deserializeChannelKey(values, "key");
+        UUID uuid = serializer.deserializeUUID(values, "uuid");
         String name = (String)values.get("name");
+        Component displayName = serializer.deserializeComponent(values, "display-name", GenericYamlSerializer.COLORED_DECORATED);
+        UUID owner = serializer.deserializeUUID(values, "owner");
+        List<UUID> members = serializer.deserializeUUIDList(values, "members");
+        String messageFormat = (String)values.get("message-format");
 
-        String strDisplayName = (String)values.get("displayName");
-        Component displayName = strDisplayName == null ? null : miniMessage.deserialize(strDisplayName);
-
-        UUID owner = UUID.fromString((String)values.get("owner"));
-        String messageFormat = (String)values.get("messageFormat");
-
-        List<?> strUUIDs = (List<?>)values.get("members");
-        Set<UUID> members = strUUIDs.stream().map(memberUUID -> {
-            try {
-                return UUID.fromString(String.valueOf(memberUUID));
-            } catch (IllegalArgumentException err) {
-                return null;
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toSet());
-
-        UserChatChannel channel = new UserChatChannelImpl(plugin, uuid, key, owner, name);
-        ((AbstractChatChannel)channel).setMembers(members);
+        UserChatChannelImpl channel = new UserChatChannelImpl(plugin, uuid, key, owner, name);
+        channel.setMembers(members);
         channel.setDisplayName(displayName);
         channel.setMessageFormat(messageFormat);
         return channel;
