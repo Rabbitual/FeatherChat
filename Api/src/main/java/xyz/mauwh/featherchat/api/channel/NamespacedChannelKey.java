@@ -19,7 +19,7 @@ public final class NamespacedChannelKey {
         this(owner.getName(), channelName);
     }
 
-    public NamespacedChannelKey(@NotNull String namespace, @NotNull String channelName) {
+    public NamespacedChannelKey(@NotNull String namespace, @NotNull String channelName) throws IllegalArgumentException {
         Objects.requireNonNull(namespace, "Owner cannot be null");
         Objects.requireNonNull(channelName, "Channel name cannot be null");
         this.namespace = namespace.toLowerCase(Locale.ROOT);
@@ -27,7 +27,7 @@ public final class NamespacedChannelKey {
         if (!VALID_CHARACTERS.matcher(this.namespace).matches()) {
             throw new IllegalArgumentException("Invalid namespace. Must be [a-z0-9_-] (" + this.namespace + ")");
         } else if (!VALID_CHARACTERS.matcher(this.key).matches()) {
-            throw new IllegalArgumentException("Invalid key. Must be [a-z0-9/._-] (" + this);
+            throw new IllegalArgumentException("Invalid key. Must be [a-z0-9_-] (" + this);
         } else if (toString().length() > 48) {
             throw new IllegalArgumentException("NamespacedChannelKey must be less than 48 characters (" + this + ")");
         }
