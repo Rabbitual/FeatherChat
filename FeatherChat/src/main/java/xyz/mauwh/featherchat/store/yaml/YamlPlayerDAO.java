@@ -42,6 +42,7 @@ public final class YamlPlayerDAO implements PlayerDAO {
     }
 
     @Override
+    @NotNull
     public Player read(@NotNull UUID playerUUID) throws DataEntityAccessException {
         File file = ymlFile(playerUUID);
         if (!file.exists()) {
