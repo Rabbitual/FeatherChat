@@ -12,10 +12,7 @@ import xyz.mauwh.featherchat.api.messenger.ChatMessenger;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class AbstractChatChannel implements ChatChannel {
 
@@ -96,7 +93,7 @@ public abstract class AbstractChatChannel implements ChatChannel {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
-    public void setMembers(@NotNull Set<UUID> members) {
+    public void setMembers(@NotNull Collection<UUID> members) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

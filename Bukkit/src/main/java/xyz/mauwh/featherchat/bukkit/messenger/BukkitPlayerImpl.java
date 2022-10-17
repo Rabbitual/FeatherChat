@@ -77,7 +77,7 @@ public final class BukkitPlayerImpl extends AbstractChatMessenger implements Pla
         return isOnline() && Objects.requireNonNull(getHandle()).hasPermission(permission);
     }
 
-    public void setChannels(@NotNull Set<UUID> channels) {
+    public void setChannels(@NotNull Collection<UUID> channels) {
         this.channels.clear();
         this.channels.addAll(channels);
     }

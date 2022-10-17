@@ -1,17 +1,16 @@
 package xyz.mauwh.featherchat.channel;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.jetbrains.annotations.NotNull;
 import xyz.mauwh.featherchat.api.channel.NamespacedChannelKey;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.messenger.Player;
 import xyz.mauwh.featherchat.plugin.FeatherChatPlugin;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 public class UserChatChannelImpl extends AbstractChatChannel implements UserChatChannel {
 
@@ -46,7 +45,7 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
     }
 
     @Override
-    public void setMembers(@NotNull Set<UUID> members) {
+    public void setMembers(@NotNull Collection<UUID> members) {
         this.members.clear();
         this.members.addAll(members);
     }
@@ -86,14 +85,9 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
     }
 
     public void sendDissolutionMessage() {
-        Player owner = plugin.getMessengers().getByUUID(this.owner);
-        if (owner != null) {
-            owner.sendMessage(Component.text("Your channel '", NamedTextColor.RED)
-                    .append(getFriendlyName()).append(Component.text("' has been dissolved", NamedTextColor.RED)));
-        }
-        Component dissolutionMsg = Component.text("Channel '", NamedTextColor.RED)
-                .append(getFriendlyName()).append(Component.text("' has been dissolved", NamedTextColor.RED));
-        plugin.getMessengers().getAll().stream().filter(this::isMember).forEach(player -> player.sendMessage(dissolutionMsg));
+        Component nameAndKey = getFriendlyName().append(text(" (" + getKey() + ")"));
+        Component message = nameAndKey.append(text(" has been dissolved", RED));
+        plugin.getMessengers().getAll().stream().filter(this::isMember).forEach(player -> player.sendMessage(message));
     }
 
     @Override
