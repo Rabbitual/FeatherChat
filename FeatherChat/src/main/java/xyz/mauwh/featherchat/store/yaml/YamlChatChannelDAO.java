@@ -78,8 +78,9 @@ public final class YamlChatChannelDAO implements ChatChannelDAO {
         values.put("key", channel.getKey().toString());
         values.put("uuid", channel.getUUID().toString());
         values.put("name", channel.getName());
-
-        channel.getDisplayName().ifPresent(displayName -> values.put("display-name", GenericYamlSerializer.COLORED.serialize(displayName)));
+        if (channel.hasDisplayName()) {
+            values.put("display-name", GenericYamlSerializer.COLORED.serialize(channel.getDisplayName()));
+        }
         values.put("owner", channel.getOwner().toString());
         values.put("members", channel.getMembers().stream().map(String::valueOf).toList());
         values.put("message-format", channel.getMessageFormat());

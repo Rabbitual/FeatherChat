@@ -60,14 +60,13 @@ public abstract class AbstractChatChannel implements ChatChannel {
     }
 
     @Override
-    @NotNull
-    public Optional<Component> getDisplayName() {
-        return Optional.ofNullable(displayName);
+    public boolean hasDisplayName() {
+        return displayName != null;
     }
 
     @Override
     @NotNull
-    public Component getFriendlyName() {
+    public Component getDisplayName() {
         return displayName != null ? displayName : Component.text(name);
     }
 

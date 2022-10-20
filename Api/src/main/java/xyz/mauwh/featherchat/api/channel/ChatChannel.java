@@ -29,18 +29,14 @@ public interface ChatChannel {
      */
     @NotNull String getName();
 
-    /**
-     * Gets the display name of this chat channel.
-     * @return This display name of this chat channel
-     */
-    @NotNull Optional<Component> getDisplayName();
+    boolean hasDisplayName();
 
     /**
-     * Gets the "friendly name" of this chat channel, which will always be displayed in chat. As a display name may not
-     * always be set by the owner, the "friendly name" is the display name if set, else it will return {@link #getName()}.
+     * Gets the display name of this chat channel, which will always be displayed in chat. If no display name is set,
+     * else it will return the result of {@link #getName()} as a component.
      * @return The "friendly name" of this chat channel
      */
-    @NotNull Component getFriendlyName();
+    @NotNull Component getDisplayName();
 
     /**
      * Sets the display name of this chat messenger.

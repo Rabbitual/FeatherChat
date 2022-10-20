@@ -64,7 +64,7 @@ public class ChannelMessageHandler {
 
     @NotNull
     private TagResolver[] createMessageTags(@NotNull ChannelMessage message, boolean preview) {
-        Component channelName = message.getChannel().getFriendlyName();
+        Component channelName = message.getChannel().getDisplayName();
         return new TagResolver[] {
             Placeholder.component("timestamp", text(formatter.format(LocalDateTime.now()))),
             Placeholder.component("channel_name", channelName),
@@ -75,10 +75,10 @@ public class ChannelMessageHandler {
 
     @NotNull
     private TagResolver[] createInfoTags(@NotNull UserChatChannel channel) {
-        Component displayName = channel.getDisplayName()
-                .map(dn -> dn.append(text(" (" + channel.getName() + ")")))
-                .orElse(channel.getFriendlyName());
-
+        TextComponent.Builder displayName = text().append(channel.getDisplayName());
+        if (channel.hasDisplayName()) {
+            displayName.append(text(" (" + channel.getName() + ")"));
+        }
         TextComponent.Builder members = Component.text();
         Set<UUID> uuids = channel.getMembers();
         Iterator<UUID> iter = uuids.iterator();

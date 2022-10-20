@@ -85,7 +85,7 @@ public class UserChatChannelImpl extends AbstractChatChannel implements UserChat
     }
 
     public void sendDissolutionMessage() {
-        Component nameAndKey = getFriendlyName().append(text(" (" + getKey() + ")"));
+        Component nameAndKey = getDisplayName().append(text(" (" + getKey() + ")"));
         Component message = nameAndKey.append(text(" has been dissolved", RED));
         plugin.getMessengers().getAll().stream().filter(this::isMember).forEach(player -> player.sendMessage(message));
     }

@@ -54,7 +54,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
             throw new InvalidCommandArgument("Invitee already belongs to the specified channel", false);
         }
         plugin.getInvitations().invite(channel, issuer, invitee);
-        Component inviteeMsg = text("You have been invited to ", GREEN).append(channel.getFriendlyName())
+        Component inviteeMsg = text("You have been invited to ", GREEN).append(channel.getDisplayName())
                 .append(text(" by ", GREEN)).append(issuer.getDisplayName());
         invitee.sendMessage(inviteeMsg);
         invitee.sendMessage(createInviteeAcceptDenyMessage(channel.getKey()));
@@ -73,7 +73,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
             channel.sendMessage(issuer.getDisplayName().append(text(" has joined the channel", GREEN)));
         }
         if (channel.addMember(issuer)) {
-            issuer.sendMessage(text("You have joined ", GREEN).append(channel.getFriendlyName()));
+            issuer.sendMessage(text("You have joined ", GREEN).append(channel.getDisplayName()));
         }
     }
 
@@ -85,7 +85,7 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
         if (!plugin.getInvitations().removeInvitation(issuer, channel)) {
             throw new InvalidCommandArgument("You do not have a pending invite to the specified channel", false);
         }
-        issuer.sendMessage(text("You have denied your invitation to ", RED).append(channel.getFriendlyName()));
+        issuer.sendMessage(text("You have denied your invitation to ", RED).append(channel.getDisplayName()));
     }
 
     @Subcommand("chat")
@@ -123,12 +123,12 @@ public final class FeatherChatChannelSubcommand extends BaseCommand {
     @CommandPermission("featherchat.channel.format")
     public void onFormat(@NotNull Player issuer, @NotNull @Flags("owned") UserChatChannel channel, @NotNull String messageFormat) {
         channel.setMessageFormat(messageFormat);
-        issuer.sendMessage(text("Changed message format for channel ", GREEN).append(channel.getFriendlyName()));
+        issuer.sendMessage(text("Changed message format for channel ", GREEN).append(channel.getDisplayName()));
     }
 
     @NotNull
     private Component createIssuerInviteMessage(@NotNull UserChatChannel channel, @NotNull Player invitee) {
-        return invitee.getDisplayName().append(text(" has been invited to join ", GREEN)).append(channel.getFriendlyName());
+        return invitee.getDisplayName().append(text(" has been invited to join ", GREEN)).append(channel.getDisplayName());
     }
 
     @NotNull
