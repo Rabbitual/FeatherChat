@@ -5,67 +5,90 @@ import org.jetbrains.annotations.Nullable;
 import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.member.ChannelMember;
 import xyz.mauwh.featherchat.api.channel.member.ChannelMembers;
-import xyz.mauwh.featherchat.api.messenger.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
-public final class ChannelMemberRepository implements ChannelMembers {
+public final class ChannelMemberRepository implements ChannelMembers.Global {
 
-    private final Map<UUID, Set<ChannelMember>> byChannel;
-    private final Map<UUID, Set<ChannelMember>> byPlayer;
+    final Set<ChannelMember> members;
+    private final Map<UUID, ChannelMembersMap> channelViews;
+    private final Map<UUID, ChannelMembersMap> playerViews;
 
     public ChannelMemberRepository() {
-        this.byChannel = new HashMap<>();
-        this.byPlayer = new HashMap<>();
+        this.members = new HashSet<>();
+        this.channelViews = new HashMap<>();
+        this.playerViews = new HashMap<>();
     }
 
     @Override
     @NotNull
-    public ChannelMember create(@NotNull UserChatChannel channel, @NotNull Player player) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public ChannelMembers.Global global() {
+        return this;
     }
 
     @Override
-    @Nullable
-    public ChannelMember get(@NotNull UserChatChannel channel, @NotNull Player player) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    @NotNull
+    public ChannelMember create(@NotNull UUID channelUUID, @NotNull UUID playerUUID) {
+        ChannelMember member = new ChannelMember(channelUUID, playerUUID);
+        channelViews.computeIfAbsent(channelUUID, uuid -> new ChannelMembersMap(this)).put(playerUUID, member);
+        playerViews.computeIfAbsent(playerUUID, uuid -> new ChannelMembersMap(this)).put(channelUUID, member);
+        return member;
     }
 
     @Override
     @Nullable
     public ChannelMember get(@NotNull UUID channelUUID, @NotNull UUID playerUUID) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        ChannelMembersMap channelView = channelViews.get(channelUUID);
+        return channelView == null ? null : channelView.get(playerUUID);
     }
 
     @Override
     @NotNull
-    public Set<ChannelMember> getByChannel(@NotNull UserChatChannel channel) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Collection<ChannelMember> getAllByChannel(@NotNull UUID channelUUID) {
+        ChannelMembersMap channelView = channelViews.get(channelUUID);
+        return channelView == null ? Collections.emptySet() : channelView.getAll();
     }
 
     @Override
     @NotNull
-    public Set<ChannelMember> getByPlayer(@NotNull Player player) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Collection<ChannelMember> getAllByPlayer(@NotNull UUID playerUUID) {
+        ChannelMembersMap playerView = playerViews.get(playerUUID);
+        return playerView == null ? Collections.emptySet() : playerView.getAll();
+    }
+
+    @Override
+    public void remove(@NotNull ChannelMember member) {
+        members.remove(member);
+        ChannelMembersMap view = channelViews.get(member.getChannelUUID());
+        if (view != null) {
+            view.members.remove(member.getPlayerUUID(), member);
+        }
+        view = playerViews.get(member.getPlayerUUID());
+        if (view != null) {
+            view.members.remove(member.getPlayerUUID(), member);
+        }
     }
 
     @Override
     public void load(@NotNull UUID channelUUID, @NotNull UUID playerUUID, @Nullable BiConsumer<ChannelMember, Throwable> callback) {
-        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
     @Override
     public void loadByChannel(@NotNull UUID channelUUID, @Nullable BiConsumer<Set<UserChatChannel>, Throwable> callback) {
-        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
     @Override
     public void loadByPlayer(@NotNull UUID playerUUID, @Nullable BiConsumer<Set<UserChatChannel>, Throwable> callback) {
-        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
+
+    @NotNull
+    @Override
+    public Iterator<ChannelMember> iterator() {
+        return members.iterator();
     }
 
 }
