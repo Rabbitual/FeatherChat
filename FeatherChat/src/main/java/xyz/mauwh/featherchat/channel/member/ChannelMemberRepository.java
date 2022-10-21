@@ -2,23 +2,27 @@ package xyz.mauwh.featherchat.channel.member;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.mauwh.featherchat.api.channel.UserChatChannel;
 import xyz.mauwh.featherchat.api.channel.member.ChannelMember;
 import xyz.mauwh.featherchat.api.channel.member.ChannelMembers;
+import xyz.mauwh.featherchat.store.ChannelMemberDAO;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public final class ChannelMemberRepository implements ChannelMembers.Global {
 
     final Set<ChannelMember> members;
     private final Map<UUID, ChannelMembersMap> channelViews;
     private final Map<UUID, ChannelMembersMap> playerViews;
+    private final ChannelMemberDAO channelMemberDAO;
 
-    public ChannelMemberRepository() {
+    public ChannelMemberRepository(@NotNull ChannelMemberDAO channelMemberDAO) {
         this.members = new HashSet<>();
         this.channelViews = new HashMap<>();
         this.playerViews = new HashMap<>();
+        this.channelMemberDAO = channelMemberDAO;
     }
 
     @Override
@@ -31,9 +35,17 @@ public final class ChannelMemberRepository implements ChannelMembers.Global {
     @NotNull
     public ChannelMember create(@NotNull UUID channelUUID, @NotNull UUID playerUUID) {
         ChannelMember member = new ChannelMember(channelUUID, playerUUID);
+        CompletableFuture.runAsync(() -> channelMemberDAO.create(member));
+        cacheMember(member);
+        return member;
+    }
+
+    private void cacheMember(@NotNull ChannelMember member) {
+        UUID channelUUID = member.getChannelUUID();
+        UUID playerUUID = member.getPlayerUUID();
+        members.add(member);
         channelViews.computeIfAbsent(channelUUID, uuid -> new ChannelMembersMap(this)).put(playerUUID, member);
         playerViews.computeIfAbsent(playerUUID, uuid -> new ChannelMembersMap(this)).put(channelUUID, member);
-        return member;
     }
 
     @Override
@@ -60,29 +72,50 @@ public final class ChannelMemberRepository implements ChannelMembers.Global {
     @Override
     public void remove(@NotNull ChannelMember member) {
         members.remove(member);
-        ChannelMembersMap view = channelViews.get(member.getChannelUUID());
-        if (view != null) {
-            view.members.remove(member.getPlayerUUID(), member);
+    }
+
+    @Override
+    public void load(@NotNull UUID channelUUID, @NotNull UUID playerUUID, @NotNull BiConsumer<ChannelMember, Throwable> callback) {
+        CompletableFuture.supplyAsync(() -> channelMemberDAO.read(channelUUID, playerUUID))
+                .whenComplete((loaded, err) -> {
+                    callback.accept(loaded, err);
+                    if (loaded != null) {
+                        cacheMember(loaded);
+                    }
+                });
+    }
+
+    @Override
+    public void loadByChannel(@NotNull UUID channelUUID, @NotNull BiConsumer<Collection<ChannelMember>, Throwable> callback) {
+        CompletableFuture.supplyAsync(() -> channelMemberDAO.findAllByChannelUUID(channelUUID))
+                .whenComplete((loaded, err) -> {
+                    callback.accept(loaded, err);
+                    ChannelMembersMap channelView = channelViews.computeIfAbsent(channelUUID, uuid -> new ChannelMembersMap(this));
+                    populateChannelMembersView(channelView, ChannelMember::getChannelUUID, ChannelMember::getPlayerUUID, playerViews, loaded);
+                });
+    }
+
+    @Override
+    public void loadByPlayer(@NotNull UUID playerUUID, @NotNull BiConsumer<Collection<ChannelMember>, Throwable> callback) {
+        CompletableFuture.supplyAsync(() -> channelMemberDAO.findAllByChannelUUID(playerUUID))
+                .whenComplete((loaded, err) -> {
+                    callback.accept(loaded, err);
+                    ChannelMembersMap playerView = playerViews.computeIfAbsent(playerUUID, uuid -> new ChannelMembersMap(this));
+                    populateChannelMembersView(playerView, ChannelMember::getPlayerUUID, ChannelMember::getChannelUUID, channelViews, loaded);
+                });
+    }
+
+    private void populateChannelMembersView(@NotNull ChannelMembersMap primaryView,
+                                            @NotNull Function<ChannelMember, UUID> getPrimaryUUID,
+                                            @NotNull Function<ChannelMember, UUID> getOtherUUID,
+                                            @NotNull Map<UUID, ChannelMembersMap> otherViewsMap,
+                                            @NotNull Collection<ChannelMember> members) {
+        Function<UUID, ChannelMembersMap> mapProvider = (uuid) -> new ChannelMembersMap(this);
+        for (ChannelMember member : members) {
+            primaryView.put(getPrimaryUUID.apply(member), member);
+            ChannelMembersMap otherView = otherViewsMap.computeIfAbsent(getOtherUUID.apply(member), mapProvider);
+            otherView.put(member.getChannelUUID(), member);
         }
-        view = playerViews.get(member.getPlayerUUID());
-        if (view != null) {
-            view.members.remove(member.getPlayerUUID(), member);
-        }
-    }
-
-    @Override
-    public void load(@NotNull UUID channelUUID, @NotNull UUID playerUUID, @Nullable BiConsumer<ChannelMember, Throwable> callback) {
-
-    }
-
-    @Override
-    public void loadByChannel(@NotNull UUID channelUUID, @Nullable BiConsumer<Set<UserChatChannel>, Throwable> callback) {
-
-    }
-
-    @Override
-    public void loadByPlayer(@NotNull UUID playerUUID, @Nullable BiConsumer<Set<UserChatChannel>, Throwable> callback) {
-
     }
 
     @NotNull

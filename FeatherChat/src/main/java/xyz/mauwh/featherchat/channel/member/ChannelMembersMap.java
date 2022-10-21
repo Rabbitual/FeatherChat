@@ -43,7 +43,19 @@ public class ChannelMembersMap implements Iterable<ChannelMember> {
     @Override
     @NotNull
     public Iterator<ChannelMember> iterator() {
-        return members.values().iterator();
+        return new Iterator<>() {
+            private final Iterator<Map.Entry<UUID, ChannelMember>> iter = members.entrySet().iterator();
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public ChannelMember next() {
+                return iter.next().getValue();
+            }
+        };
     }
 
 }
